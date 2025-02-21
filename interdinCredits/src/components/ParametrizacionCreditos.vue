@@ -15,8 +15,7 @@
 
       <!-- Tarjetas de redes procesadoras -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div v-for="network in networks" :key="network.name"
-          @click="selectMessage(network.name)"
+        <div v-for="network in networks" :key="network.name" @click="selectMessage(network.name)"
           class="bg-white rounded-lg shadow-lg p-8 cursor-pointer hover:bg-gray-200 transition">
           <h2 class="text-xl font-bold text-gray-800 mb-4">{{ network.name }}</h2>
           <p class="text-gray-700">{{ network.description }}</p>
@@ -56,43 +55,15 @@
 
       <!-- Configuración para Medianet -->
       <div v-if="selectedMessage.includes('Medianet')" class="mt-6">
-        <div class="p-4 border rounded bg-gray-100">
-          <h3 class="text-lg font-bold mb-4">Configuración de créditos para Medianet:</h3>
-          <div class="grid grid-cols-1 gap-4">
-            <div v-for="plan in medianetPlans" :key="plan" class="flex flex-col space-y-2">
-              <label class="flex items-center space-x-2">
-                <input type="checkbox" v-model="selectedPlans" :value="plan" />
-                <span class="font-medium">{{ plan }}</span>
-              </label>
-              <div v-if="selectedPlans.includes(plan)" class="grid grid-cols-3 gap-4 ml-6">
-                <input type="text" v-model="selectedValues[plan]"
-                  @input="updateSelectedValues(plan, $event.target.value)" class="p-2 border rounded w-full"
-                  placeholder="En meses" />
-                <div>
-                  <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
-                  <input type="number" v-model="minValues[plan]" class="p-2 border rounded w-full" placeholder="Ej:1" />
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
-                  <input type="number" v-model="maxValues[plan]" class="p-2 border rounded w-full"
-                    placeholder="Ej: 9999999" />
-                </div>
-              </div>
-            </div>
+        <MedianetConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans"
+          :selected-values="selectedValues" :min-values="minValues" :max-values="maxValues"
+          @update:selectedPlans="selectedPlans = $event" @update:selectedValues="selectedValues = $event"
+          @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
+      </div>
 
-            <!-- Configuración para Data  -->
-            <div v-if="selectedMessage.includes('Datafast')" class="mt-6">
-            </div>
-
-            <!-- Checkbox para tipo de crédito corriente -->
-            <label class="flex items-center space-x-2 mt-4">
-              <input type="checkbox" v-model="hasCorriente" />
-              <span class="font-medium">Incluir tipo de crédito Corriente</span>
-            </label>
-          </div>
-        </div>
-        <CreditConfigGenerator :selected-plans="selectedPlans" :selected-values="selectedValues" :min-values="minValues"
-          :max-values="maxValues" :plan-to-letter-map="planToLetterMap" class="mt-6" />
+      <!-- Configuración para Datafast -->
+      <div v-if="selectedMessage.includes('Datafast')" class="mt-6">
+        <!-- Aquí puedes agregar la configuración para Datafast si es necesario -->
       </div>
     </div>
   </div>
@@ -101,8 +72,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
-//import MedianetConfig from './MedianetConfig.vue';
-
+import MedianetConfig from './MedianetConfig.vue';
 
 // Mapeo de planes a letras
 const planToLetterMap = {
@@ -115,7 +85,7 @@ const planToLetterMap = {
 };
 
 const plans = Object.keys(planToLetterMap);
-const medianetPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)"];
+const medianetPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
 
 const networks = [
   { name: 'Interdin', description: 'Procesar datos con Interdin.' },
@@ -134,7 +104,7 @@ const hasCorriente = ref(false);
 
 // Observador para limpiar datos de planes no seleccionados
 watch(selectedPlans, (newPlans) => {
-  plans.forEach(plan => {
+  plans.forEach((plan) => {
     if (!newPlans.includes(plan)) {
       delete selectedValues.value[plan];
       delete minValues.value[plan];
@@ -150,7 +120,7 @@ watch(hasCorriente, (newVal) => {
       selectedPlans.value.push('Corriente');
     }
   } else {
-    selectedPlans.value = selectedPlans.value.filter(plan => plan !== 'Corriente');
+    selectedPlans.value = selectedPlans.value.filter((plan) => plan !== 'Corriente');
   }
 });
 
@@ -171,7 +141,7 @@ const selectMessage = (message) => {
 // Función para actualizar valores seleccionados
 const updateSelectedValues = (plan, value) => {
   if (value.includes(',')) {
-    selectedValues.value[plan] = value.split(',').map(v => v.trim());
+    selectedValues.value[plan] = value.split(',').map((v) => v.trim());
   } else {
     selectedValues.value[plan] = value;
   }
