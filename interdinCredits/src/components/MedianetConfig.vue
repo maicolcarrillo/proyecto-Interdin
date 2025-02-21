@@ -78,19 +78,23 @@ const jsonData = ref(null);
 const jsonFormatted = ref('');
 const jsonCompact = ref('');
 
-const planToGroupMap = {
-  "Diferido Propio (Con interes)": { groupCode: "P", type: "01" },
-  "Diferido corriente (Sin interes)": { groupCode: "D", type: "04" },
-  "Corriente": { groupCode: "C", type: "00" },
+const planToLetterMap = {
+  "Diferido Propio (Con interes)": "P",
+  "Diferido corriente (Sin interes)": "D",
+  "Corriente": "CorrienteConfig",
 };
 
 const handleCheckboxChange = (plan, event) => {
   const isChecked = event.target.checked;
+  let updatedPlans = [...selectedPlans.value];
+
   if (isChecked) {
-    selectedPlans.value.push(plan);
+    updatedPlans.push(plan);
   } else {
-    selectedPlans.value = selectedPlans.value.filter((p) => p !== plan);
+    updatedPlans = updatedPlans.filter((p) => p !== plan);
   }
+
+  selectedPlans.value = updatedPlans;
 };
 
 const updateSelectedValues = (plan, value) => {
@@ -109,23 +113,33 @@ const generateJSON = () => {
   const result = { include: [] };
 
   selectedPlans.value.forEach((plan) => {
-    const { groupCode, type } = planToGroupMap[plan];
+    const letter = planToLetterMap[plan];
 
     if (plan === 'Corriente') {
       result.include.push({
         code: "0",
-        groupCode,
-        type,
+        groupCode: "C",
+        type: "00",
         installments: ["0"]
       });
     } else {
       result.include.push({
         code: "0",
-        groupCode,
-        type,
-        installments: (selectedValues.value[plan] || "").split(",").map(v => v.trim()),
-        minAmount: minValues.value[plan] || 1,
-        maxAmount: maxValues.value[plan] || 999999,
+        groupCode: letter,
+        type: "04",
+        installments: selectedValues.value[plan]?.split(',') || [],
+        behaviors: [
+          {
+            end: selectedValues.value[plan].split(',').at(-1),
+            start: selectedValues.value[plan][0],
+            settings: {
+              amount: {
+                max: maxValues.value[plan] || 999999,
+                min: minValues.value[plan] || 1
+              }
+            }
+          }
+        ]
       });
     }
   });
@@ -134,5 +148,11 @@ const generateJSON = () => {
   jsonFormatted.value = JSON.stringify(result, null, 2);
   jsonCompact.value = JSON.stringify(result);
   emit('update:json', result);
+};
+
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text)
+    .then(() => alert('JSON copiado al portapapeles'))
+    .catch((err) => console.error('Error al copiar:', err));
 };
 </script>
