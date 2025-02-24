@@ -1,6 +1,27 @@
 <template>
+  <!-- Menú de navegación -->
+  <div class="flex w-full md:max-w-xl mx-auto my-4 rounded shadow-lg">
+    <a href="#" target="_blank" aria-current="false"
+      class="w-full flex justify-center font-medium rounded-l px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100">
+      Bines
+    </a>
+    <a href="#" aria-current="false"
+      class="w-full flex items-center gap-x-2 justify-center font-medium rounded-r px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100">
+      Forwording
+      <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+        stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- Contenido principal -->
   <div class="bg-gray-100 min-h-screen p-4">
     <div class="container mx-auto pt-12 pb-20">
+      <!-- Título y descripción -->
       <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">
         Bienvenido a parametrización de tipo de créditos Ecuador
       </h1>
@@ -16,7 +37,7 @@
       <!-- Tarjetas de redes procesadoras -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div v-for="network in networks" :key="network.name" @click="selectMessage(network.name)"
-          class="bg-white rounded-lg shadow-lg p-8 cursor-pointer hover:bg-gray-200 transition">
+          class="transform bg-white rounded-lg shadow-lg p-8 cursor-pointer hover:bg-gray-200 transition duration-300 hover:scale-105">
           <h2 class="text-xl font-bold text-gray-800 mb-4">{{ network.name }}</h2>
           <p class="text-gray-700">{{ network.description }}</p>
         </div>
@@ -74,6 +95,10 @@ import { ref, watch } from 'vue';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
 
+
+//Bines
+import Bines from './Bines.vue';
+
 // Mapeo de planes a letras
 const planToLetterMap = {
   "Plan pago especial": "X",
@@ -81,7 +106,7 @@ const planToLetterMap = {
   "Diferido corriente (Sin interes)": "D",
   "Corriente": "C",
   "Diferido Plus": "M",
-  "Diferido preferente": "L"
+  "Diferido preferente": "L",
 };
 
 const plans = Object.keys(planToLetterMap);
@@ -91,7 +116,7 @@ const networks = [
   { name: 'Interdin', description: 'Procesar datos con Interdin.' },
   { name: 'Medianet', description: 'Procesar datos con Medianet.' },
   { name: 'Datafast', description: 'Procesar datos con Datafast.' },
-  { name: 'Austro', description: 'Procesar datos con Austro.' }
+  { name: 'Austro', description: 'Procesar datos con Austro.' },
 ];
 
 // Variables reactivas
@@ -102,7 +127,7 @@ const minValues = ref({});
 const maxValues = ref({});
 const hasCorriente = ref(false);
 
-// Observador para limpiar datos de planes no seleccionados
+// Observadores
 watch(selectedPlans, (newPlans) => {
   plans.forEach((plan) => {
     if (!newPlans.includes(plan)) {
@@ -113,7 +138,6 @@ watch(selectedPlans, (newPlans) => {
   });
 });
 
-// Observador para incluir/excluir Corriente automáticamente en Medianet
 watch(hasCorriente, (newVal) => {
   if (newVal && selectedMessage.value.includes('Medianet')) {
     if (!selectedPlans.value.includes('Corriente')) {
@@ -124,7 +148,7 @@ watch(hasCorriente, (newVal) => {
   }
 });
 
-// Función para seleccionar red procesadora
+// Funciones
 const selectMessage = (message) => {
   selectedMessage.value = `Has seleccionado ${message}.`;
   if (message !== "Interdin" && message !== "Medianet") {
@@ -138,7 +162,6 @@ const selectMessage = (message) => {
   }
 };
 
-// Función para actualizar valores seleccionados
 const updateSelectedValues = (plan, value) => {
   if (value.includes(',')) {
     selectedValues.value[plan] = value.split(',').map((v) => v.trim());

@@ -2,6 +2,7 @@
 import ParametrizacionCreditos from './components/ParametrizacionCreditos.vue';
 import CreditConfigGenerator from './components/CreditConfigGenerator.vue';
 import MedianetConfig from './components/MedianetConfig.vue'
+import Bines from './components/Bines.vue';
 
 </script>
 
@@ -11,7 +12,10 @@ import MedianetConfig from './components/MedianetConfig.vue'
   <ParametrizacionCreditos />
   <CreditConfigGenerator />
   <MedianetConfig />
+  <!-- -->
 
 </template>
 
 <style scoped></style>
+
+
