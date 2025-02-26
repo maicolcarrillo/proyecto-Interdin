@@ -1,9 +1,10 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow mt-6">
-    <button @click="generateJSON"
-      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 transition-colors">
+    <button @click="generateJSON" :disabled="!props.selectedPlans.length"
+      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
       Generar JSON
     </button>
+
 
     <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px]">
       <!-- Columna Izquierda - JSON Formateado -->
@@ -87,7 +88,7 @@ function generateJSON() {
 
   // Agregar "remove": true para los valores no seleccionados en todas las categorías
   Object.keys(result).forEach(category => {
-    for (let i = 1; i <= 32; i++) {
+    for (let i = 1; i <= 61; i++) {
       if (!result[category][i]) {
         result[category][i] = { remove: true };
       }

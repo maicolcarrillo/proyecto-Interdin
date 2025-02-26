@@ -25,8 +25,8 @@
           </div>
         </div>
       </div>
-      <button @click="generateJSON"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors">
+      <button @click="generateJSON" :disabled="selectedPlans.length === 0" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors 
+         disabled:bg-gray-400 disabled:cursor-not-allowed">
         Generar JSON
       </button>
       <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px] mt-6">

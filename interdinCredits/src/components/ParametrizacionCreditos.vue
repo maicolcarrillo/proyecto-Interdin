@@ -1,21 +1,21 @@
 <template>
   <!-- Menú de navegación -->
-  <div class="flex w-full md:max-w-xl mx-auto my-4 rounded shadow-lg">
+  <div class="flex w-full md:max-w-xl mx-auto my-4 rounded-lg shadow-lg overflow-hidden">
     <a href="#" target="_blank" aria-current="false"
-      class="w-full flex justify-center font-medium rounded-l px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100">
+      class="group w-full flex justify-center font-medium px-5 py-2 border bg-white text-gray-800 border-gray-200 transition-all duration-1000 ease-in-out hover:bg-black hover:text-white">
       Bines
     </a>
-    <a href="#" aria-current="false"
-      class="w-full flex items-center gap-x-2 justify-center font-medium rounded-r px-5 py-2 border bg-white text-gray-800 border-gray-200 hover:bg-gray-100">
+    <!-- <a href="#" aria-current="false"
+      class="group w-full flex items-center gap-x-2 justify-center font-medium px-5 py-2 border bg-white text-gray-800 border-gray-200 transition-all duration-700 ease-in-out hover:bg-black hover:text-white">
       Forwording
-      <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-        stroke="currentColor" aria-hidden="true">
+      <svg class="w-5 h-5 group-hover:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        stroke-width="1.5" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
       </svg>
-    </a>
+    </a> -->
   </div>
 
   <!-- Contenido principal -->
@@ -37,11 +37,15 @@
       <!-- Tarjetas de redes procesadoras -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div v-for="network in networks" :key="network.name" @click="selectMessage(network.name)"
-          class="transform bg-white rounded-lg shadow-lg p-8 cursor-pointer hover:bg-gray-200 transition duration-300 hover:scale-105">
-          <h2 class="text-xl font-bold text-gray-800 mb-4">{{ network.name }}</h2>
-          <p class="text-gray-700">{{ network.description }}</p>
+          class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-1000 ease-in-out hover:scale-105 hover:bg-black">
+
+          <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">{{ network.name }}</h2>
+          <p class="text-gray-700 group-hover:text-white">{{ network.description }}</p>
+
         </div>
       </div>
+
+
 
       <!-- Configuración para Interdin -->
       <div v-if="selectedMessage.includes('Interdin')" class="mt-6">
@@ -84,7 +88,10 @@
 
       <!-- Configuración para Datafast -->
       <div v-if="selectedMessage.includes('Datafast')" class="mt-6">
-        <!-- Aquí puedes agregar la configuración para Datafast si es necesario -->
+        <DatafashConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans"
+          :selected-values="selectedValues" :min-values="minValues" :max-values="maxValues"
+          @update:selectedPlans="selectedPlans = $event" @update:selectedValues="selectedValues = $event"
+          @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
       </div>
     </div>
   </div>
@@ -94,6 +101,7 @@
 import { ref, watch } from 'vue';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
+import DatafashConfig from './DatafashConfig.vue';
 
 
 //Bines
