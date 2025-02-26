@@ -126,7 +126,7 @@ const generateJSON = () => {
       result.include.push({
         code: "0",
         groupCode: letter,
-        type: "04",
+        type: plan === "Diferido Propio (Con interes)" ? "01" : "04",
         installments: selectedValues.value[plan]?.split(',') || [],
         behaviors: [
           {

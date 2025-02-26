@@ -10,29 +10,74 @@
     },
     {
       "code": "0",
-      "groupCode": "D",
-      "type": "04",
-       "behaviors": [
-        {
-          "end": 48,
-          "start": 3,
-          "settings": {
-            "amount": {
-              "max": 99999,
-              "min": 100
-            }
-          }
-        }
-      ],
+      "groupCode": "P",
+      "type": "02",
       "installments": [
         "3",
+        "6"
+      ]
+    },
+    {
+      "code": "1",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
+        "3",
+        "7"
+      ]
+    },
+    {
+      "code": "2",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
         "6",
+        "7"
+      ]
+    },
+    {
+      "code": "3",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "code": "0",
+      "groupCode": "D",
+      "type": "03",
+      "installments": [
         "9",
-        "12",
-        "18",
-        "24",
-        "36",
-        "48"
+        "12"
+      ]
+    },
+    {
+      "code": "1",
+      "groupCode": "D",
+      "type": "09",
+      "installments": [
+        "13",
+        "14"
+      ]
+    },
+    {
+      "code": "2",
+      "groupCode": "D",
+      "type": "09",
+      "installments": [
+        "15",
+        "16"
+      ]
+    },
+    {
+      "code": "3",
+      "groupCode": "D",
+      "type": "09",
+      "installments": [
+        "17",
+        "18"
       ]
     }
   ]
