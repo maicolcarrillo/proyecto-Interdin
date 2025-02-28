@@ -82,3 +82,57 @@
     }
   ]
 }
+///////////////////////////////////////////////////////////////////////// prueba 2
+
+{
+  "include": [
+    {
+      "code": "0",
+      "groupCode": "P",
+      "type": "02",
+      "installments": [
+        "3",
+        "6"
+      ],
+      "behaviors": [
+        {
+          "end": "6",
+          "start": "3",
+          "settings": {
+            "amount": {
+              "max": 999999,
+              "min": 1
+            }
+          }
+        }
+      ]
+    },{
+      //1 mes de gracia Diferido Propio (Con interes)
+      "code": "1",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
+        "3",
+        "7"
+      ]
+    },{
+      //2 mes de gracia Diferido Propio (Con interes)
+      "code": "2",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
+        "6",
+        "7"
+      ]
+    },{
+      //3 mes de gracia Diferido Propio (Con interes)
+      "code": "3",
+      "groupCode": "P",
+      "type": "07",
+      "installments": [
+        "8",
+        "9"
+      ]
+    }
+  ]
+}
