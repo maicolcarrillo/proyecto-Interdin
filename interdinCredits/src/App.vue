@@ -9,13 +9,11 @@ import Bines from './components/Bines.vue';
 <template>
   <!--Componentes-->
 
-  <ParametrizacionCreditos />
-  <CreditConfigGenerator />
-  <MedianetConfig />
+  <ParametrizacionCreditos style="margin: 20px;" />
+  <CreditConfigGenerator style="margin: 20px;" />
+  <MedianetConfig style="margin: 20px;" />
   <!-- -->
 
 </template>
 
 <style scoped></style>
-
-
