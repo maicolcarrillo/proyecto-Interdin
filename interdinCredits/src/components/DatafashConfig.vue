@@ -27,10 +27,27 @@
                                 placeholder="Ej: 999999" />
                         </div>
                     </div>
+                    <!-- Checkbox para meses de gracia -->
+                    <div v-if="selectedPlans.includes(plan) && ['Diferido Propio (Con interes)', 'Diferido corriente (Sin interes)'].includes(plan)"
+                        class="ml-6">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" v-model="graceMonthsEnabled[plan]" />
+                            <span class="text-sm font-bold">Meses de gracia</span>
+                        </label>
+
+                        <!-- Inputs dinámicos solo si el checkbox está activado -->
+                        <div v-if="graceMonthsEnabled[plan]" class="grid grid-cols-3 gap-2 mt-2">
+                            <input v-for="month in [1, 2, 3]" :key="month" type="text"
+                                :value="graceMonths[plan]?.[month - 1] || ''"
+                                @input="updateGraceMonths(plan, month - 1, $event.target.value)"
+                                class="p-2 border rounded w-full" :placeholder="`Diferido ${month} mes de gracia`" />
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <button @click="generateJSON" :disabled="selectedPlans.length === 0"
-             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                 Generar JSON
             </button>
             <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px] mt-6">
@@ -79,6 +96,8 @@ const selectedPlans = ref([]);
 const selectedValues = ref({});
 const minValues = ref({});
 const maxValues = ref({});
+const graceMonths = ref({});
+const graceMonthsEnabled = ref({});
 
 const jsonData = ref(null);
 const jsonFormatted = ref('');
@@ -115,6 +134,16 @@ const updateMaxValues = (plan, value) => {
     maxValues.value = { ...maxValues.value, [plan]: value || 999999 };
 };
 
+const updateGraceMonths = (plan, index, value) => {
+    // Asegurar que el plan tenga un array válido
+    if (!graceMonths.value[plan]) {
+        graceMonths.value[plan] = [];
+    }
+    
+    // Actualizar el valor ingresado en la posición correcta
+    graceMonths.value[plan][index] = value;
+};
+
 const generateJSON = () => {
     const result = { include: [] };
 
@@ -129,7 +158,7 @@ const generateJSON = () => {
                 installments: ["0"]
             });
         } else {
-            result.include.push({
+            let planData = {
                 code: "0",
                 groupCode: letter,
                 type: plan === "Diferido Propio (Con interes)" ? "02" : "03",
@@ -146,7 +175,14 @@ const generateJSON = () => {
                         }
                     }
                 ]
-            });
+            };
+
+            // Si tiene meses de gracia, los agregamos al JSON
+            if (graceMonthsEnabled.value[plan]) {
+                planData.behaviors[0].settings.graceMonths = parseInt(graceMonths.value[plan]) || 0;
+            }
+
+            result.include.push(planData);
         }
     });
 
@@ -155,7 +191,6 @@ const generateJSON = () => {
     jsonCompact.value = JSON.stringify(result);
     emit('update:json', result);
 };
-
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
