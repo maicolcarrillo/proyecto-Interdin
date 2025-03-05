@@ -10,12 +10,11 @@
                         <span class="font-medium">{{ plan }}</span>
                     </label>
                     <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'"
-                        class="grid grid-cols-3 gap-4 ml-6 ">
+                        class="grid grid-cols-3 gap-4 ml-6">
                         <input type="text" :value="selectedValues[plan]"
                             @input="updateSelectedValues(plan, $event.target.value)" class="p-2 border rounded w-full"
                             placeholder="En meses" />
                         <div>
-                            
                             <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
                             <input type="number" :value="minValues[plan]"
                                 @input="updateMinValues(plan, $event.target.value)" class="p-2 border rounded w-full"
@@ -147,12 +146,12 @@ const updateGraceMonths = (plan, index, value) => {
 
 const generateJSON = () => {
     const result = { include: [] };
+    let codeCounter = 1;
 
     selectedPlans.value.forEach((plan) => {
         const letter = planToLetterMap[plan];
 
         if (plan === 'Corriente') {
-            // Plan corriente
             result.include.push({
                 code: "0",
                 groupCode: "C",
@@ -160,16 +159,16 @@ const generateJSON = () => {
                 installments: ["0"]
             });
         } else {
-            // Planes diferidos
+            let installments = selectedValues.value[plan]?.split(',') || [];
             let planData = {
                 code: "0",
                 groupCode: letter,
                 type: plan === "Diferido Propio (Con interes)" ? "02" : "03",
-                installments: selectedValues.value[plan]?.split(',') || [],
+                installments: installments,
                 behaviors: [
                     {
-                        end: selectedValues.value[plan].split(',').at(-1),
-                        start: selectedValues.value[plan][0],
+                        end: installments.at(-1),
+                        start: installments[0],
                         settings: {
                             amount: {
                                 max: maxValues.value[plan] || 999999,
@@ -179,25 +178,20 @@ const generateJSON = () => {
                     }
                 ]
             };
+
             result.include.push(planData);
 
-            // Si tiene meses de gracia, agregamos un objeto por cada mes de gracia
-            if (graceMonthsEnabled.value[plan]) {
-                graceMonths.value[plan].forEach((monthValue, index) => {
-                    if (monthValue) { // Solo agregar si el valor no está vacío
-                        // Convertir monthValue en un array separado por comas
-                        const installmentsArray = monthValue.split(',').map(item => item.trim());
-
-                        // Determinar groupCode y type según el tipo de plan
-                        const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
-                        const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
-
+            // Agregar meses de gracia para "Diferido Propio (Con interés)"
+            if (plan === "Diferido Propio (Con interes)" && graceMonthsEnabled.value[plan]) {
+                graceMonths.value[plan]?.forEach((graceMonth, index) => {
+                    if (graceMonth) {
                         result.include.push({
-                            code: (index + 1).toString(), // Código único para cada mes de gracia
-                            groupCode: graceGroupCode, // "D" o "P" según el plan
-                            type: graceType, // "09" o "07" según el plan
-                            installments: installmentsArray // Valor del mes de gracia
+                            code: codeCounter.toString(),
+                            groupCode: "P",
+                            type: "07",
+                            installments: [installments[index], (parseInt(installments[index]) + parseInt(graceMonth)).toString()]
                         });
+                        codeCounter++;
                     }
                 });
             }
@@ -209,6 +203,7 @@ const generateJSON = () => {
     jsonCompact.value = JSON.stringify(result);
     emit('update:json', result);
 };
+
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
