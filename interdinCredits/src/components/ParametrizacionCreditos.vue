@@ -93,6 +93,12 @@
           @update:selectedPlans="selectedPlans = $event" @update:selectedValues="selectedValues = $event"
           @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
       </div>
+      <div v-if="selectedMessage.includes('Austro')" class="mt-6">
+        <AustroConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
+          :min-values="minValues" :max-values="maxValues" @update:selectedPlans="selectedPlans = $event"
+          @update:selectedValues="selectedValues = $event" @update:minValues="minValues = $event"
+          @update:maxValues="maxValues = $event" />
+      </div>
     </div>
   </div>
 </template>
@@ -123,10 +129,10 @@ const plans = Object.keys(planToLetterMap);
 const medianetPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
 
 const networks = [
-  { name: 'Interdin', description: 'Procesar datos con Interdin.' },
-  { name: 'Medianet', description: 'Procesar datos con Medianet.' },
-  { name: 'Datafast', description: 'Procesar datos con Datafast.' },
-  { name: 'Austro', description: 'Procesar datos con Austro.' },
+  { name: 'Interdin', description: 'Red procesadora Interdin.' },
+  { name: 'Medianet', description: 'Red procesadora  Medianet.' },
+  { name: 'Datafast', description: 'Red procesadora  Datafast.' },
+  { name: 'Austro', description: 'Red procesadora  Austro.' },
 ];
 
 // Variables reactivas
