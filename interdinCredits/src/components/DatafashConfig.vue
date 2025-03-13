@@ -1,29 +1,33 @@
 <template>
     <div class="mt-6">
-        <div class="p-4 border rounded bg-gray-100">
-            <h3 class="text-lg font-bold mb-4">Configuración de créditos para Datafast:</h3>
-            <div class="grid grid-cols-1 gap-4">
+        <div class="p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos para Datafast:</h3>
+            <div class="grid grid-cols-1 gap-6">
                 <div v-for="plan in medianetPlans" :key="plan" class="flex flex-col space-y-2">
-                    <label class="flex items-center space-x-2">
+                    <label class="flex items-center space-x-3">
                         <input type="checkbox" :checked="selectedPlans.includes(plan)"
-                            @change="handleCheckboxChange(plan, $event)" />
-                        <span class="font-medium">{{ plan }}</span>
+                            @change="handleCheckboxChange(plan, $event)"
+                            class="w-5 h-5 text-blue-500 accent-blue-600" />
+                        <span class="font-medium text-gray-700">{{ plan }}</span>
                     </label>
                     <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'"
-                        class="grid grid-cols-3 gap-4 ml-6">
+                        class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <input type="text" :value="selectedValues[plan]"
-                            @input="updateSelectedValues(plan, $event.target.value)" class="p-2 border rounded w-full"
+                            @input="updateSelectedValues(plan, $event.target.value)"
+                            class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="En meses" />
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
                             <input type="number" :value="minValues[plan]"
-                                @input="updateMinValues(plan, $event.target.value)" class="p-2 border rounded w-full"
+                                @input="updateMinValues(plan, $event.target.value)"
+                                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 placeholder="Ej:1" />
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
                             <input type="number" :value="maxValues[plan]"
-                                @input="updateMaxValues(plan, $event.target.value)" class="p-2 border rounded w-full"
+                                @input="updateMaxValues(plan, $event.target.value)"
+                                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 placeholder="Ej: 999999" />
                         </div>
                     </div>
@@ -36,18 +40,20 @@
                         </label>
 
                         <!-- Inputs dinámicos solo si el checkbox está activado -->
-                        <div v-if="graceMonthsEnabled[plan]" class="grid grid-cols-3 gap-2 mt-2">
+                        <div v-if="graceMonthsEnabled[plan]"
+                            class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                             <input v-for="month in [1, 2, 3]" :key="month" type="text"
                                 :value="graceMonths[plan]?.[month - 1] || ''"
                                 @input="updateGraceMonths(plan, month - 1, $event.target.value)"
-                                class="p-2 border rounded w-full" :placeholder="`Diferido ${month} mes de gracia`" />
+                                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                :placeholder="`Diferido ${month} mes de gracia`" />
                         </div>
                     </div>
 
                 </div>
             </div>
-            <button @click="generateJSON" :disabled="selectedPlans.length === 0"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+            <button @click="generateJSON" :disabled="selectedPlans.length === 0" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4 transition-all 
+               disabled:bg-gray-400 disabled:cursor-not-allowed">
                 Generar JSON
             </button>
             <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px] mt-6">
@@ -84,10 +90,7 @@
 import { ref, defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
-    medianetPlans: {
-        type: Array,
-        required: true,
-    },
+    medianetPlans: { type: Array, required: true, default: () => [] }
 });
 
 const emit = defineEmits(['update:json']);
@@ -146,12 +149,13 @@ const updateGraceMonths = (plan, index, value) => {
 
 const generateJSON = () => {
     const result = { include: [] };
-    let codeCounter = 1;
+    let codeCounter = 1; // Contador para códigos únicos
 
     selectedPlans.value.forEach((plan) => {
         const letter = planToLetterMap[plan];
 
         if (plan === 'Corriente') {
+            // Plan corriente
             result.include.push({
                 code: "0",
                 groupCode: "C",
@@ -159,8 +163,9 @@ const generateJSON = () => {
                 installments: ["0"]
             });
         } else {
-            let installments = selectedValues.value[plan]?.split(',') || [];
-            let planData = {
+            // Planes diferidos
+            const installments = selectedValues.value[plan]?.split(',') || [];
+            const planData = {
                 code: "0",
                 groupCode: letter,
                 type: plan === "Diferido Propio (Con interes)" ? "02" : "03",
@@ -181,30 +186,22 @@ const generateJSON = () => {
 
             result.include.push(planData);
 
-            // Agregar meses de gracia para "Diferido Propio (Con interés)"
-            if (plan === "Diferido Propio (Con interes)" && graceMonthsEnabled.value[plan]) {
-                graceMonths.value[plan]?.forEach((graceMonth, index) => {
-                    if (graceMonth) {
+            // Si tiene meses de gracia, agregamos un objeto por cada mes de gracia
+            if (graceMonthsEnabled.value[plan]) {
+                graceMonths.value[plan].forEach((monthValue) => {
+                    if (monthValue) { // Solo agregar si el valor no está vacío
+                        const installmentsArray = monthValue.split(',').map(item => item.trim());
+                        const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
+                        const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
+
                         result.include.push({
-                            code: codeCounter.toString(),
-                            groupCode: "P",
-                            type: "07",
-                            installments: [installments[index], (parseInt(installments[index]) + parseInt(graceMonth)).toString()]
+                            code: codeCounter.toString(), // Código único para cada mes de gracia
+                            groupCode: graceGroupCode, // "D" o "P" según el plan
+                            type: graceType, // "09" o "07" según el plan
+                            installments: installmentsArray // Valor del mes de gracia (convertido a array)
                         });
-                        codeCounter++;
-                    }
-                })
-            }
-            if (plan === "Diferido Propio (Sin interes)" && graceMonthsEnabled.value[plan]) {
-                graceMonths.value[plan]?.forEach((graceMonth, index) => {
-                    if (graceMonth) {
-                        result.include.push({
-                            code: codeCounter.toString(),
-                            groupCode: "D",
-                            type: "09",
-                            installments: [installments[index], (parseInt(installments[index]) + parseInt(graceMonth)).toString()]
-                        });
-                        codeCounter++;
+
+                        codeCounter++; // Incrementar el contador de códigos
                     }
                 });
             }
@@ -217,10 +214,24 @@ const generateJSON = () => {
     emit('update:json', result);
 };
 
-
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
         .then(() => alert('JSON copiado al portapapeles'))
         .catch((err) => console.error('Error al copiar:', err));
 };
 </script>
+
+/*
+else if (plan === "Diferido Sin interes especial") {
+result.include.push({
+code: "0",
+groupCode: "X",
+type: "A",
+installments: installments,
+behaviors: [{
+start: installments[0],
+end: installments.at(-1),
+settings: { amount: { min: minValues.value[plan] || 1, max: maxValues.value[plan] || 999999 } }
+}]
+});
+}*/
