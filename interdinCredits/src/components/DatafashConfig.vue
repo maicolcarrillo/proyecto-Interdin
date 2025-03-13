@@ -193,6 +193,19 @@ const generateJSON = () => {
                         });
                         codeCounter++;
                     }
+                })
+            }
+            if (plan === "Diferido Propio (Sin interes)" && graceMonthsEnabled.value[plan]) {
+                graceMonths.value[plan]?.forEach((graceMonth, index) => {
+                    if (graceMonth) {
+                        result.include.push({
+                            code: codeCounter.toString(),
+                            groupCode: "D",
+                            type: "09",
+                            installments: [installments[index], (parseInt(installments[index]) + parseInt(graceMonth)).toString()]
+                        });
+                        codeCounter++;
+                    }
                 });
             }
         }

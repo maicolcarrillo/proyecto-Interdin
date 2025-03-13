@@ -1,36 +1,44 @@
 <template>
   <div class="mt-6">
-    <div class="p-4 border rounded bg-gray-100">
-      <h3 class="text-lg font-bold mb-4">Configuración de créditos para Medianet:</h3>
-      <div class="grid grid-cols-1 gap-4">
-        <div v-for="plan in medianetPlans" :key="plan" class="flex flex-col space-y-2">
-          <label class="flex items-center space-x-2">
-            <input type="checkbox" :checked="selectedPlans.includes(plan)"
-              @change="handleCheckboxChange(plan, $event)" />
-            <span class="font-medium">{{ plan }}</span>
+    <div class="p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos para Medianet:</h3>
+
+      <div class="grid grid-cols-1 gap-6">
+        <div v-for="plan in medianetPlans" :key="plan" class="flex flex-col space-y-4">
+          <label class="flex items-center space-x-3">
+            <input type="checkbox" :checked="selectedPlans.includes(plan)" @change="handleCheckboxChange(plan, $event)"
+              class="w-5 h-5 text-blue-500 accent-blue-600" />
+            <span class="font-medium text-gray-700">{{ plan }}</span>
           </label>
-          <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'" class="grid grid-cols-3 gap-4 ml-6">
+
+          <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'"
+            class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
             <input type="text" :value="selectedValues[plan]" @input="updateSelectedValues(plan, $event.target.value)"
-              class="p-2 border rounded w-full" placeholder="En meses" />
+              class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="En meses" />
             <div>
               <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
               <input type="number" :value="minValues[plan]" @input="updateMinValues(plan, $event.target.value)"
-                class="p-2 border rounded w-full" placeholder="Ej:1" />
+                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Ej: 1" />
             </div>
             <div>
               <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
               <input type="number" :value="maxValues[plan]" @input="updateMaxValues(plan, $event.target.value)"
-                class="p-2 border rounded w-full" placeholder="Ej: 999999" />
+                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Ej: 999999" />
             </div>
           </div>
         </div>
       </div>
-      <button @click="generateJSON" :disabled="selectedPlans.length === 0" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 transition-colors 
-         disabled:bg-gray-400 disabled:cursor-not-allowed">
+
+      <button @click="generateJSON" :disabled="selectedPlans.length === 0" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4 transition-all 
+               disabled:bg-gray-400 disabled:cursor-not-allowed">
         Generar JSON
       </button>
+
       <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px] mt-6">
-        <div class="bg-gray-800 p-4 rounded-lg overflow-hidden flex flex-col">
+        <div class="bg-gray-800 p-4 rounded-lg overflow-hidden flex flex-col shadow-lg">
           <div class="flex justify-between items-center mb-2">
             <span class="text-gray-300 text-sm">JSON Formateado</span>
             <button @click="copyToClipboard(jsonFormatted)" class="text-gray-400 hover:text-white transition-colors">
@@ -41,7 +49,8 @@
             <code class="bg-gray-800/50 p-2 rounded inline-block min-w-full">{{ jsonFormatted }}</code>
           </pre>
         </div>
-        <div class="bg-gray-800 p-4 rounded-lg overflow-hidden flex flex-col">
+
+        <div class="bg-gray-800 p-4 rounded-lg overflow-hidden flex flex-col shadow-lg">
           <div class="flex justify-between items-center mb-2">
             <span class="text-gray-300 text-sm">JSON Compacto</span>
             <button @click="copyToClipboard(jsonCompact)" class="text-gray-400 hover:text-white transition-colors">
@@ -56,6 +65,8 @@
     </div>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';

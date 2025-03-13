@@ -49,34 +49,47 @@
 
       <!-- Configuración para Interdin -->
       <div v-if="selectedMessage.includes('Interdin')" class="mt-6">
-        <div class="p-4 border rounded bg-gray-100">
-          <h3 class="text-lg font-bold mb-4">Configuración de créditos:</h3>
-          <div class="grid grid-cols-1 gap-4">
-            <div v-for="plan in plans" :key="plan" class="flex flex-col space-y-2">
-              <label class="flex items-center space-x-2">
-                <input type="checkbox" v-model="selectedPlans" :value="plan" />
-                <span class="font-medium">{{ plan }}</span>
+        <div class=" p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos:</h3>
+
+          <div class="grid grid-cols-1 gap-6">
+            <div v-for="plan in plans" :key="plan" class="flex flex-col space-y-4">
+              <label class="flex items-center space-x-3">
+                <input type="checkbox" v-model="selectedPlans" :value="plan"
+                  class="w-5 h-5 text-blue-500 accent-blue-600" />
+                <span class="font-medium text-gray-700">{{ plan }}</span>
               </label>
-              <div v-if="selectedPlans.includes(plan)" class="grid grid-cols-3 gap-4 ml-6">
+
+              <div v-if="selectedPlans.includes(plan)"
+                class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <input type="text" v-model="selectedValues[plan]"
-                  @input="updateSelectedValues(plan, $event.target.value)" class="p-2 border rounded w-full"
+                  @input="updateSelectedValues(plan, $event.target.value)"
+                  class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="En meses" />
+
                 <div>
-                  <label class="block text-sm text-gray-600 mb-1">Monto Mínimo Para Mostrar el Tipo de Crédito</label>
-                  <input type="number" v-model="minValues[plan]" class="p-2 border rounded w-full" placeholder="Ej:1" />
+                  <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
+                  <input type="number" v-model="minValues[plan]"
+                    class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Ej: 1" />
                 </div>
+
                 <div>
-                  <label class="block text-sm text-gray-600 mb-1">Monto Máximo Para Mostrar el Tipo de Crédito</label>
-                  <input type="number" v-model="maxValues[plan]" class="p-2 border rounded w-full"
+                  <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
+                  <input type="number" v-model="maxValues[plan]"
+                    class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                     placeholder="Ej: 9999999" />
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <CreditConfigGenerator :selected-plans="selectedPlans" :selected-values="selectedValues" :min-values="minValues"
           :max-values="maxValues" :plan-to-letter-map="planToLetterMap" class="mt-6" />
       </div>
+
+
 
       <!-- Configuración para Medianet -->
       <div v-if="selectedMessage.includes('Medianet')" class="mt-6">
@@ -94,7 +107,7 @@
           @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
       </div>
       <div v-if="selectedMessage.includes('Austro')" class="mt-6">
-        <AustroConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
+        <AustroConfig :autroPlans="autroPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
           :min-values="minValues" :max-values="maxValues" @update:selectedPlans="selectedPlans = $event"
           @update:selectedValues="selectedValues = $event" @update:minValues="minValues = $event"
           @update:maxValues="maxValues = $event" />
@@ -127,6 +140,7 @@ const planToLetterMap = {
 
 const plans = Object.keys(planToLetterMap);
 const medianetPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
+const autroPlans = ["Diferido Sin interes especial", "Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
 
 const networks = [
   { name: 'Interdin', description: 'Red procesadora Interdin.' },
