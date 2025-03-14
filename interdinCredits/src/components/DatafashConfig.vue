@@ -109,7 +109,7 @@ const jsonCompact = ref('');
 const planToLetterMap = {
     "Diferido Propio (Con interes)": "P",
     "Diferido corriente (Sin interes)": "D",
-    "Corriente": "C",
+    "Corriente": "CorrienteConfig",
 };
 
 const handleCheckboxChange = (plan, event) => {
@@ -147,65 +147,95 @@ const updateGraceMonths = (plan, index, value) => {
     graceMonths.value[plan][index] = value;
 };
 
+// Función para generar un objeto JSON basado en los planes seleccionados
 const generateJSON = () => {
+    // Creamos un objeto inicial con una propiedad "include" que es un array vacío
     const result = { include: [] };
 
-    selectedPlans.value.forEach((plan, index) => {
-        const letter = planToLetterMap[plan] || "DEFAULT";
-        const installments = plan === 'Corriente' ? ["0"] : (selectedValues.value[plan]?.split(',') ?? []);
+    // Contador para generar códigos únicos para los meses de gracia
+    let codeCounter = 1;
 
-        let type;
+    // Recorremos cada plan seleccionado
+    selectedPlans.value.forEach((plan) => {
+        // Obtenemos la letra correspondiente al plan usando un mapa (planToLetterMap)
+        const letter = planToLetterMap[plan];
+
+        // Verificamos si el plan es "Corriente"
         if (plan === 'Corriente') {
-            type = "00";
+            // Si es "Corriente", agregamos un objeto específico al array "include"
+            result.include.push({
+                code: "0", // Código fijo
+                groupCode: "C", // Código de grupo fijo para "Corriente"
+                type: "00", // Tipo fijo para "Corriente"
+                installments: ["0"] // Cuotas fijas
+            });
         } else {
-            type = plan === "Diferido Propio (Con interes)" ? "02" : "04";
-        }
+            // Si no es "Corriente", es un plan diferido
+            // Obtenemos las cuotas seleccionadas para este plan (si existen)
+            const installments = selectedValues.value[plan]?.split(',') || [];
 
-        const planObject = {
-            code: index.toString(),
-            groupCode: letter,
-            type,
-            installments
-        };
-
-        if (plan !== 'Corriente') {
-            planObject.behaviors = [
-                {
-                    end: installments.at(-1),
-                    start: installments[0],
-                    settings: {
-                        amount: {
-                            max: maxValues.value[plan] ?? 999999,
-                            min: minValues.value[plan] ?? 1
+            // Creamos un objeto con los datos del plan diferido
+            const planData = {
+                code: "0", // Código fijo
+                groupCode: letter, // Código de grupo obtenido del mapa
+                type: plan === "Diferido Propio (Con interes)" ? "02" : "04", // Tipo según el plan
+                installments: installments, // Cuotas seleccionadas
+                behaviors: [
+                    {
+                        end: installments.at(-1), // Última cuota
+                        start: installments[0], // Primera cuota
+                        settings: {
+                            amount: {
+                                max: maxValues.value[plan] || 999999, // Valor máximo permitido
+                                min: minValues.value[plan] || 1 // Valor mínimo permitido
+                            }
                         }
                     }
-                }
-            ];
-        }
+                ]
+            };
 
-        result.include.push(planObject);
+            // Agregamos el objeto del plan diferido al array "include"
+            result.include.push(planData);
 
-        if (graceMonthsEnabled.value[plan] && Array.isArray(graceMonths.value[plan])) {
-            graceMonths.value[plan].forEach((monthValue) => {
-                if (monthValue) {
-                    const installmentsArray = monthValue.split(',').map(item => item.trim());
-                    const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
-                    const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
+            // Verificamos si los meses de gracia están habilitados para este plan
+            if (graceMonthsEnabled.value[plan]) {
+                // Recorremos cada mes de gracia
+                graceMonths.value[plan].forEach((monthValue) => {
+                    // Solo agregamos el mes de gracia si tiene un valor
+                    if (monthValue) {
+                        // Convertimos el valor del mes de gracia en un array
+                        const installmentsArray = monthValue.split(',').map(item => item.trim());
 
-                    result.include.push({
-                        code: (result.include.length + 1).toString(),
-                        groupCode: graceGroupCode,
-                        type: graceType,
-                        installments: installmentsArray
-                    });
-                }
-            });
+                        // Determinamos el código de grupo y el tipo según el plan
+                        const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
+                        const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
+
+                        // Agregamos un objeto por cada mes de gracia al array "include"
+                        result.include.push({
+                            code: codeCounter.toString(), // Código único generado
+                            groupCode: graceGroupCode, // Código de grupo para el mes de gracia
+                            type: graceType, // Tipo para el mes de gracia
+                            installments: installmentsArray // Cuotas del mes de gracia
+                        });
+
+                        // Incrementamos el contador de códigos únicos
+                        codeCounter++;
+                    }
+                });
+            }
         }
     });
 
+    // Guardamos el resultado en una variable reactiva (jsonData)
     jsonData.value = result;
+
+    // Formateamos el resultado como un JSON legible (con indentación)
     jsonFormatted.value = JSON.stringify(result, null, 2);
+
+    // Formateamos el resultado como un JSON compacto (sin espacios)
     jsonCompact.value = JSON.stringify(result);
+
+    // Emitimos el resultado para que otros componentes puedan usarlo
     emit('update:json', result);
 };
 
