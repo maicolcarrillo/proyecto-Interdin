@@ -158,7 +158,7 @@ const generateJSON = () => {
         if (plan === 'Corriente') {
             type = "00";
         } else {
-            type = plan === "Diferido Propio (Con interes)" ? "02" : "03";
+            type = plan === "Diferido Propio (Con interes)" ? "02" : "04";
         }
 
         const planObject = {
