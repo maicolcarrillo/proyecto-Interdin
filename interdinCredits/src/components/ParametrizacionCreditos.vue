@@ -46,7 +46,6 @@
       </div>
 
 
-
       <!-- Configuración para Interdin -->
       <div v-if="selectedMessage.includes('Interdin')" class="mt-6">
         <div class=" p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
@@ -90,7 +89,6 @@
       </div>
 
 
-
       <!-- Configuración para Medianet -->
       <div v-if="selectedMessage.includes('Medianet')" class="mt-6">
         <MedianetConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans"
@@ -101,13 +99,13 @@
 
       <!-- Configuración para Datafast -->
       <div v-if="selectedMessage.includes('Datafast')" class="mt-6">
-        <DatafashConfig :medianet-plans="medianetPlans" :selected-plans="selectedPlans"
+        <DatafashConfig :datafast-Plans="datafastPlans" :selected-plans="selectedPlans"
           :selected-values="selectedValues" :min-values="minValues" :max-values="maxValues"
           @update:selectedPlans="selectedPlans = $event" @update:selectedValues="selectedValues = $event"
           @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
       </div>
       <div v-if="selectedMessage.includes('Austro')" class="mt-6">
-        <AustroConfig :autroPlans="autroPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
+        <AustroConfig :autro-Plans="autroPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
           :min-values="minValues" :max-values="maxValues" @update:selectedPlans="selectedPlans = $event"
           @update:selectedValues="selectedValues = $event" @update:minValues="minValues = $event"
           @update:maxValues="maxValues = $event" />
@@ -139,8 +137,9 @@ const planToLetterMap = {
 };
 
 const plans = Object.keys(planToLetterMap);
-const medianetPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
+const medianetPlans = ["Plan Pagos Mes a Mes Sin Intereses", "Diferido Propio (Con interes)", "Diferido Corriente (Sin interes)", "Corriente"];
 const autroPlans = ["Diferido Sin interes especial", "Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
+const datafastPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"]
 
 const networks = [
   { name: 'Interdin', description: 'Red procesadora Interdin.' },

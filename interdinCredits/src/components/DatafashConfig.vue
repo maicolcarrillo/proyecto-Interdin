@@ -3,7 +3,7 @@
         <div class="p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos para Datafast:</h3>
             <div class="grid grid-cols-1 gap-6">
-                <div v-for="plan in medianetPlans" :key="plan" class="flex flex-col space-y-2">
+                <div v-for="plan in datafastPlans" :key="plan" class="flex flex-col space-y-2">
                     <label class="flex items-center space-x-3">
                         <input type="checkbox" :checked="selectedPlans.includes(plan)"
                             @change="handleCheckboxChange(plan, $event)"
@@ -90,7 +90,7 @@
 import { ref, defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
-    medianetPlans: { type: Array, required: true, default: () => [] }
+    datafastPlans: { type: Array, required: true, default: () => [] }
 });
 
 const emit = defineEmits(['update:json']);
@@ -109,7 +109,7 @@ const jsonCompact = ref('');
 const planToLetterMap = {
     "Diferido Propio (Con interes)": "P",
     "Diferido corriente (Sin interes)": "D",
-    "Corriente": "CorrienteConfig",
+    "Corriente": "C",
 };
 
 const handleCheckboxChange = (plan, event) => {
@@ -149,62 +149,57 @@ const updateGraceMonths = (plan, index, value) => {
 
 const generateJSON = () => {
     const result = { include: [] };
-    let codeCounter = 1; // Contador para códigos únicos
 
-    selectedPlans.value.forEach((plan) => {
-        const letter = planToLetterMap[plan];
+    selectedPlans.value.forEach((plan, index) => {
+        const letter = planToLetterMap[plan] || "DEFAULT";
+        const installments = selectedValues.value[plan]?.split(',') ?? [];
 
+        let type;
         if (plan === 'Corriente') {
-            // Plan corriente
-            result.include.push({
-                code: "0",
-                groupCode: "C",
-                type: "00",
-                installments: ["0"]
-            });
+            type = "00";
         } else {
-            // Planes diferidos
-            const installments = selectedValues.value[plan]?.split(',') || [];
-            const planData = {
-                code: "0",
-                groupCode: letter,
-                type: plan === "Diferido Propio (Con interes)" ? "02" : "03",
-                installments: installments,
-                behaviors: [
-                    {
-                        end: installments.at(-1),
-                        start: installments[0],
-                        settings: {
-                            amount: {
-                                max: maxValues.value[plan] || 999999,
-                                min: minValues.value[plan] || 1
-                            }
+            type = plan === "Diferido Propio (Con interes)" ? "02" : "03";
+        }
+
+        const planObject = {
+            code: index.toString(),
+            groupCode: letter,
+            type,
+            installments
+        };
+
+        if (plan !== 'Corriente') {
+            planObject.behaviors = [
+                {
+                    end: installments.at(-1),
+                    start: installments[0],
+                    settings: {
+                        amount: {
+                            max: maxValues.value[plan] ?? 999999,
+                            min: minValues.value[plan] ?? 1
                         }
                     }
-                ]
-            };
+                }
+            ];
+        }
 
-            result.include.push(planData);
+        result.include.push(planObject);
 
-            // Si tiene meses de gracia, agregamos un objeto por cada mes de gracia
-            if (graceMonthsEnabled.value[plan]) {
-                graceMonths.value[plan].forEach((monthValue) => {
-                    if (monthValue) { // Solo agregar si el valor no está vacío
-                        const installmentsArray = monthValue.split(',').map(item => item.trim());
-                        const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
-                        const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
+        if (graceMonthsEnabled.value[plan] && Array.isArray(graceMonths.value[plan])) {
+            graceMonths.value[plan].forEach((monthValue) => {
+                if (monthValue) {
+                    const installmentsArray = monthValue.split(',').map(item => item.trim());
+                    const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
+                    const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
 
-                        result.include.push({
-                            code: codeCounter.toString(), // Código único para cada mes de gracia
-                            groupCode: graceGroupCode, // "D" o "P" según el plan
-                            type: graceType, // "09" o "07" según el plan
-                            installments: installmentsArray // Valor del mes de gracia (convertido a array)
-                        });
-
-                        codeCounter++; // Incrementar el contador de códigos
-                    }
-                });
-            }
+                    result.include.push({
+                        code: (result.include.length + 1).toString(),
+                        groupCode: graceGroupCode,
+                        type: graceType,
+                        installments: installmentsArray
+                    });
+                }
+            });
         }
     });
 
@@ -220,18 +215,3 @@ const copyToClipboard = (text) => {
         .catch((err) => console.error('Error al copiar:', err));
 };
 </script>
-
-/*
-else if (plan === "Diferido Sin interes especial") {
-result.include.push({
-code: "0",
-groupCode: "X",
-type: "A",
-installments: installments,
-behaviors: [{
-start: installments[0],
-end: installments.at(-1),
-settings: { amount: { min: minValues.value[plan] || 1, max: maxValues.value[plan] || 999999 } }
-}]
-});
-}*/

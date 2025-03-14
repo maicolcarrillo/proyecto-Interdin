@@ -90,8 +90,9 @@ const jsonFormatted = ref('');
 const jsonCompact = ref('');
 
 const planToLetterMap = {
+  "Plan Pagos Mes a Mes Sin Intereses": "P",
   "Diferido Propio (Con interes)": "P",
-  "Diferido corriente (Sin interes)": "D",
+  "Diferido Corriente (Sin interes)": "D",
   "Corriente": "CorrienteConfig",
 };
 
@@ -125,34 +126,43 @@ const generateJSON = () => {
 
   selectedPlans.value.forEach((plan) => {
     const letter = planToLetterMap[plan];
+    const installments = selectedValues.value[plan]?.split(',') ?? [];
 
+    // Determinar el tipo según el plan
+    let type;
     if (plan === 'Corriente') {
-      result.include.push({
-        code: "0",
-        groupCode: "C",
-        type: "00",
-        installments: ["0"]
-      });
+      type = "00";
+    } else if (plan === "Plan Pagos Mes a Mes Sin Intereses") {
+      type = "06";
     } else {
-      result.include.push({
-        code: "0",
-        groupCode: letter,
-        type: plan === "Diferido Propio (Con interes)" ? "01" : "04",
-        installments: selectedValues.value[plan]?.split(',') || [],
-        behaviors: [
-          {
-            end: selectedValues.value[plan].split(',').at(-1),
-            start: selectedValues.value[plan][0],
-            settings: {
-              amount: {
-                max: maxValues.value[plan] || 999999,
-                min: minValues.value[plan] || 1
-              }
+      type = plan === "Diferido Propio (Con interes)" ? "01" : "04";
+    }
+
+    // Objeto base del plan
+    const planObject = {
+      code: "0",
+      groupCode: plan === 'Corriente' ? "C" : letter,
+      type,
+      installments
+    };
+
+    // Agregar comportamiento solo si el plan no es "Corriente"
+    if (plan !== 'Corriente') {
+      planObject.behaviors = [
+        {
+          end: installments.at(-1),
+          start: installments[0],
+          settings: {
+            amount: {
+              max: maxValues.value[plan] ?? 999999,
+              min: minValues.value[plan] ?? 1
             }
           }
-        ]
-      });
+        }
+      ];
     }
+
+    result.include.push(planObject);
   });
 
   jsonData.value = result;
