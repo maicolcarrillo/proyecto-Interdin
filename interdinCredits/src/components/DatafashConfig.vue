@@ -152,7 +152,7 @@ const generateJSON = () => {
 
     selectedPlans.value.forEach((plan, index) => {
         const letter = planToLetterMap[plan] || "DEFAULT";
-        const installments = selectedValues.value[plan]?.split(',') ?? [];
+        const installments = plan === 'Corriente' ? ["0"] : (selectedValues.value[plan]?.split(',') ?? []);
 
         let type;
         if (plan === 'Corriente') {

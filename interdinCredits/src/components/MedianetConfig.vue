@@ -126,7 +126,7 @@ const generateJSON = () => {
 
   selectedPlans.value.forEach((plan) => {
     const letter = planToLetterMap[plan];
-    const installments = selectedValues.value[plan]?.split(',') ?? [];
+    const installments = plan === 'Corriente' ? ["0"] : (selectedValues.value[plan]?.split(',') ?? []);
 
     // Determinar el tipo según el plan
     let type;
