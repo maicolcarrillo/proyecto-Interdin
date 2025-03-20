@@ -63,7 +63,7 @@
                 class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <input type="text" v-model="selectedValues[plan]"
                   @input="updateSelectedValues(plan, $event.target.value)"
-                  class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="p-2 mt-5 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="En meses" />
 
                 <div>

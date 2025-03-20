@@ -14,7 +14,7 @@
                         class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <input type="text" :value="selectedValues[plan]"
                             @input="updateSelectedValues(plan, $event.target.value)"
-                            class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            class="p-2 mt-5 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="En meses" />
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
@@ -40,13 +40,34 @@
                         </label>
 
                         <!-- Inputs dinámicos solo si el checkbox está activado -->
-                        <div v-if="graceMonthsEnabled[plan]"
-                            class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <input v-for="month in [1, 2, 3]" :key="month" type="text"
-                                :value="graceMonths[plan]?.[month - 1] || ''"
-                                @input="updateGraceMonths(plan, month - 1, $event.target.value)"
-                                class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                :placeholder="`Diferido ${month} mes de gracia`" />
+                        <div v-if="graceMonthsEnabled[plan]" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div class="flex flex-col space-y 7">
+                                <div v-for="month in [1, 2, 3]" :key="month" class="flex flex-row gap-6">
+                                    <!-- Input del Mes -->
+                                    <div class="flex-1">
+                                        <input type="text" :value="graceMonths[plan]?.[month - 1] || ''"
+                                            @input="updateGraceMonths(plan, month - 1, $event.target.value)"
+                                            class="p-2 border border-gray-300 rounded-lg w-full mt-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            :placeholder="`Diferido ${month} mes de gracia`" />
+                                    </div>
+                                    <!-- Input del Monto Mínimo -->
+                                    <div class="flex-1">
+                                        <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
+                                        <input type="number" :value="graceMinValues[plan]?.[month - 1] || ''"
+                                            @input="updateGraceMinValues(plan, month - 1, $event.target.value)"
+                                            class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            placeholder="Ej: 1" />
+                                    </div>
+                                    <!-- Input del Monto Máximo -->
+                                    <div class="flex-1">
+                                        <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
+                                        <input type="number" :value="graceMaxValues[plan]?.[month - 1] || ''"
+                                            @input="updateGraceMaxValues(plan, month - 1, $event.target.value)"
+                                            class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            placeholder="Ej: 999999" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -101,6 +122,8 @@ const minValues = ref({});
 const maxValues = ref({});
 const graceMonths = ref({});
 const graceMonthsEnabled = ref({});
+const graceMinValues = ref({}); // Montos mínimos para meses de gracia
+const graceMaxValues = ref({}); // Montos máximos para meses de gracia
 
 const jsonData = ref(null);
 const jsonFormatted = ref('');
@@ -145,6 +168,20 @@ const updateGraceMonths = (plan, index, value) => {
 
     // Actualizar el valor ingresado en la posición correcta
     graceMonths.value[plan][index] = value;
+};
+
+const updateGraceMinValues = (plan, index, value) => {
+    if (!graceMinValues.value[plan]) {
+        graceMinValues.value[plan] = [];
+    }
+    graceMinValues.value[plan][index] = value || 1; // Valor por defecto 1 si está vacío
+};
+
+const updateGraceMaxValues = (plan, index, value) => {
+    if (!graceMaxValues.value[plan]) {
+        graceMaxValues.value[plan] = [];
+    }
+    graceMaxValues.value[plan][index] = value || 999999; // Valor por defecto 999999 si está vacío
 };
 
 const generateJSON = () => {
@@ -200,8 +237,8 @@ const generateJSON = () => {
             result.include.push(planData);
 
             // Si tiene meses de gracia, agregamos un objeto por cada mes de gracia
-            if (graceMonthsEnabled.value[plan] && graceMonths.value[plan]) {
-                graceMonths.value[plan].forEach((monthValue) => {
+            if (graceMonthsEnabled.value[plan]) {
+                graceMonths.value[plan].forEach((monthValue, index) => {
                     if (monthValue) { // Solo agregar si el valor no está vacío
                         const installmentsArray = monthValue.split(',').map(item => item.trim());
                         const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
@@ -211,7 +248,19 @@ const generateJSON = () => {
                             code: codeCounter.toString(), // Código único para cada mes de gracia
                             groupCode: graceGroupCode, // "D" o "P" según el plan
                             type: graceType, // "09" o "07" según el plan
-                            installments: installmentsArray // Valor del mes de gracia (convertido a array)
+                            installments: installmentsArray, // Valor del mes de gracia (convertido a array)
+                            behaviors: [
+                                {
+                                    end: installmentsArray.at(-1),
+                                    start: installmentsArray[0],
+                                    settings: {
+                                        amount: {
+                                            max: graceMaxValues.value[plan]?.[index] || 999999,
+                                            min: graceMinValues.value[plan]?.[index] || 1
+                                        }
+                                    }
+                                }
+                            ]
                         });
 
                         codeCounter++; // Incrementar el contador de códigos
