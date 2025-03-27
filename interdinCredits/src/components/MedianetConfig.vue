@@ -126,7 +126,7 @@ const generateJSON = () => {
   const result = { include: [] };
 
   selectedPlans.value.forEach((plan) => {
-    const letter = planToLetterMap[plan];
+    let letter = planToLetterMap[plan];
 
     // Manejo específico para el plan "Corriente"
     if (plan === 'Corriente') {
@@ -145,6 +145,7 @@ const generateJSON = () => {
       let type;
       if (plan === "Plan Pagos Mes a Mes Sin Intereses") {
         type = "06";
+        letter = "D";
       } else {
         type = plan === "Diferido Propio (Con interes)" ? "01" : "04";
       }
