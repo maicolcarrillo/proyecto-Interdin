@@ -104,6 +104,7 @@
           @update:selectedPlans="selectedPlans = $event" @update:selectedValues="selectedValues = $event"
           @update:minValues="minValues = $event" @update:maxValues="maxValues = $event" />
       </div>
+      <!-- Configuración para Austro -->
       <div v-if="selectedMessage.includes('Austro')" class="mt-6">
         <AustroConfig :autro-Plans="autroPlans" :selected-plans="selectedPlans" :selected-values="selectedValues"
           :min-values="minValues" :max-values="maxValues" @update:selectedPlans="selectedPlans = $event"
@@ -120,8 +121,6 @@ import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
 import DatafashConfig from './DatafashConfig.vue';
 import AustroConfig from './AustroConfig.vue';
-
-
 
 //Bines
 import Bines from './BinesConfig.vue';

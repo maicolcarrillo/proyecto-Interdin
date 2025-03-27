@@ -1,7 +1,7 @@
 <template>
     <div class="mt-6">
         <div class="p-6 border border-gray-300 rounded-xl shadow-2xl bg-white">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos para Datafast:</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Configuración de créditos para Austro:</h3>
             <div class="grid grid-cols-1 gap-6">
                 <div v-for="plan in autroPlans" :key="plan" class="flex flex-col space-y-2">
                     <label class="flex items-center space-x-3">
