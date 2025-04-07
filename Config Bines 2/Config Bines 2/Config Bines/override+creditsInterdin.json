@@ -1,0 +1,503 @@
+{
+    "C": {
+      "override": {
+        "code": 0,
+        "type": "00",
+        "groupCode": "C",
+        "installment": 0,
+        "installments": [
+          0
+        ]
+      }
+    },
+    "D": {
+      "1": {
+        "remove": true
+      },
+      "2": {
+        "remove": true
+      },
+      "3": {
+        "remove": true
+      },
+      "4": {
+        "remove": true
+      },
+      "5": {
+        "remove": true
+      },
+      "6": {
+        "remove": true
+      },
+      "7": {
+        "remove": true
+      },
+      "8": {
+        "remove": true
+      },
+      "9": {
+        "remove": true
+      },
+      "10": {
+        "remove": true
+      },
+      "11": {
+        "remove": true
+      },
+      "12": {
+        "remove": true
+      },
+      "13": {
+        "remove": true
+      },
+      "14": {
+        "remove": true
+      },
+      "15": {
+        "remove": true
+      },
+      "16": {
+        "remove": true
+      },
+      "17": {
+        "remove": true
+      },
+      "18": {
+        "remove": true
+      },
+      "19": {
+        "remove": true
+      },
+      "20": {
+        "remove": true
+      },
+      "21": {
+        "remove": true
+      },
+      "22": {
+        "remove": true
+      },
+      "23": {
+        "remove": true
+      },
+      "24": {
+        "remove": true
+      },
+      "25": {
+        "remove": true
+      },
+      "26": {
+        "remove": true
+      },
+      "27": {
+        "remove": true
+      },
+      "28": {
+        "remove": true
+      },
+      "29": {
+        "remove": true
+      },
+      "30": {
+        "remove": true
+      },
+      "31": {
+        "remove": true
+      },
+      "32": {
+        "remove": true
+      }
+    },
+    "M": {
+      "1": {
+        "remove": true
+      },
+      "2": {
+        "remove": true
+      },
+      "3": {
+        "remove": true
+      },
+      "4": {
+        "remove": true
+      },
+      "5": {
+        "remove": true
+      },
+      "6": {
+        "remove": true
+      },
+      "7": {
+        "remove": true
+      },
+      "8": {
+        "remove": true
+      },
+      "9": {
+        "remove": true
+      },
+      "10": {
+        "remove": true
+      },
+      "11": {
+        "remove": true
+      },
+      "12": {
+        "remove": true
+      },
+      "13": {
+        "remove": true
+      },
+      "14": {
+        "remove": true
+      },
+      "15": {
+        "remove": true
+      },
+      "16": {
+        "remove": true
+      },
+      "17": {
+        "remove": true
+      },
+      "18": {
+        "remove": true
+      },
+      "19": {
+        "remove": true
+      },
+      "20": {
+        "remove": true
+      },
+      "21": {
+        "remove": true
+      },
+      "22": {
+        "remove": true
+      },
+      "23": {
+        "remove": true
+      },
+      "24": {
+        "remove": true
+      },
+      "25": {
+        "remove": true
+      },
+      "26": {
+        "remove": true
+      },
+      "27": {
+        "remove": true
+      },
+      "28": {
+        "remove": true
+      },
+      "29": {
+        "remove": true
+      },
+      "30": {
+        "remove": true
+      },
+      "31": {
+        "remove": true
+      },
+      "32": {
+        "remove": true
+      }
+    },
+    "P": {
+      "1": {
+        "remove": true
+      },
+      "2": {
+        "remove": true
+      },
+      "3": {
+        "remove": true
+      },
+      "4": {
+        "remove": true
+      },
+      "5": {
+        "remove": true
+      },
+      "6": {
+        "remove": true
+      },
+      "7": {
+        "remove": true
+      },
+      "8": {
+        "remove": true
+      },
+      "9": {
+        "remove": true
+      },
+      "10": {
+        "remove": true
+      },
+      "11": {
+        "remove": true
+      },
+      "12": {
+        "remove": true
+      },
+      "13": {
+        "remove": true
+      },
+      "14": {
+        "remove": true
+      },
+      "15": {
+        "remove": true
+      },
+      "16": {
+        "remove": true
+      },
+      "17": {
+        "remove": true
+      },
+      "18": {
+        "remove": true
+      },
+      "19": {
+        "remove": true
+      },
+      "20": {
+        "remove": true
+      },
+      "21": {
+        "remove": true
+      },
+      "22": {
+        "remove": true
+      },
+      "23": {
+        "remove": true
+      },
+      "24": {
+        "remove": true
+      },
+      "25": {
+        "remove": true
+      },
+      "26": {
+        "remove": true
+      },
+      "27": {
+        "remove": true
+      },
+      "28": {
+        "remove": true
+      },
+      "29": {
+        "remove": true
+      },
+      "30": {
+        "remove": true
+      },
+      "31": {
+        "remove": true
+      },
+      "32": {
+        "remove": true
+      }
+    },
+    "X": {
+      "1": {
+        "remove": true
+      },
+      "2": {
+        "remove": true
+      },
+      "3": {
+        "remove": true
+      },
+      "4": {
+        "remove": true
+      },
+      "5": {
+        "remove": true
+      },
+      "6": {
+        "remove": true
+      },
+      "7": {
+        "remove": true
+      },
+      "8": {
+        "remove": true
+      },
+      "9": {
+        "remove": true
+      },
+      "10": {
+        "remove": true
+      },
+      "11": {
+        "remove": true
+      },
+      "12": {
+        "remove": true
+      },
+      "13": {
+        "remove": true
+      },
+      "14": {
+        "remove": true
+      },
+      "15": {
+        "remove": true
+      },
+      "16": {
+        "remove": true
+      },
+      "17": {
+        "remove": true
+      },
+      "18": {
+        "remove": true
+      },
+      "19": {
+        "remove": true
+      },
+      "20": {
+        "remove": true
+      },
+      "21": {
+        "remove": true
+      },
+      "22": {
+        "remove": true
+      },
+      "23": {
+        "remove": true
+      },
+      "24": {
+        "remove": true
+      },
+      "25": {
+        "remove": true
+      },
+      "26": {
+        "remove": true
+      },
+      "27": {
+        "remove": true
+      },
+      "28": {
+        "remove": true
+      },
+      "29": {
+        "remove": true
+      },
+      "30": {
+        "remove": true
+      },
+      "31": {
+        "remove": true
+      },
+      "32": {
+        "remove": true
+      }
+    },
+    "L": {
+      "1": {
+        "remove": true
+      },
+      "2": {
+        "remove": true
+      },
+      "3": {
+        "remove": true
+      },
+      "4": {
+        "remove": true
+      },
+      "5": {
+        "remove": true
+      },
+      "6": {
+        "remove": true
+      },
+      "7": {
+        "remove": true
+      },
+      "8": {
+        "remove": true
+      },
+      "9": {
+        "remove": true
+      },
+      "10": {
+        "remove": true
+      },
+      "11": {
+        "remove": true
+      },
+      "12": {
+        "remove": true
+      },
+      "13": {
+        "remove": true
+      },
+      "14": {
+        "remove": true
+      },
+      "15": {
+        "remove": true
+      },
+      "16": {
+        "remove": true
+      },
+      "17": {
+        "remove": true
+      },
+      "18": {
+        "remove": true
+      },
+      "19": {
+        "remove": true
+      },
+      "20": {
+        "remove": true
+      },
+      "21": {
+        "remove": true
+      },
+      "22": {
+        "remove": true
+      },
+      "23": {
+        "remove": true
+      },
+      "24": {
+        "remove": true
+      },
+      "25": {
+        "remove": true
+      },
+      "26": {
+        "remove": true
+      },
+      "27": {
+        "remove": true
+      },
+      "28": {
+        "remove": true
+      },
+      "29": {
+        "remove": true
+      },
+      "30": {
+        "remove": true
+      },
+      "31": {
+        "remove": true
+      },
+      "32": {
+        "remove": true
+      }
+    }
+  }
