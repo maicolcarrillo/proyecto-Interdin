@@ -145,7 +145,7 @@ const planToLetterMap = {
 const bines = [
   { network: 'Interdin', description: 'Banco Dinner Club/Pichincha' },
   { network: 'Medianet', description: 'Banco Bolivariano/Internacional' },
-  { network: 'Medianet Produ', description: 'Produbanco' },
+  { network: 'Medianet Prod', description: 'Produbanco' },
   { network: 'Datafast', description: 'Banco Guayaquil/Pacifico' }
 ];
 

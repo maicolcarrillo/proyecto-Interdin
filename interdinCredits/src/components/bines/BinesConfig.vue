@@ -396,8 +396,9 @@ const networksJson = {
     }
   },
 
-  'Medianet Produ': {
+  'Medianet Prod': {
     selection_rules: {
+      issuing_and_acquirer_banks_match: false,
       bin: {
         policy: 'allows',
         collection: ["545195",
