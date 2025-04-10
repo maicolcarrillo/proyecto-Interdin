@@ -134,12 +134,13 @@ import AustroConfig from './AustroConfig.vue';
 import BinesConfig from './bines/BinesConfig.vue';
 
 const planToLetterMap = {
-  "Plan pago especial": "X",
+  "Plan Pagos Normal": "N",
+  "Plan Pago Especial": "X",
   "Diferido Propio (Con interes)": "P",
-  "Diferido corriente (Sin interes)": "D",
+  "Diferido Corriente (Sin interes)": "D",
   "Corriente": "C",
-  "Diferido Plus": "M",
-  "Diferido preferente": "L",
+  "Diferido Plus (Mixto)": "M",
+  "Diferido Preferente": "L",
 };
 
 const bines = [

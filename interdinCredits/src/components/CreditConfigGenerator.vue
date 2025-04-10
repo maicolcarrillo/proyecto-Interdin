@@ -52,12 +52,13 @@ const jsonCompact = ref(null);
 const jsonData = ref(null);
 
 const planToIdMap = {
-  "Plan pago especial": 3,
+  "Plan Pagos Normal": 3,
+  "Plan Pago Especial": 3,
   "Diferido Propio (Con interes)": 3,
-  "Diferido corriente (Sin interes)": 3,
+  "Diferido Corriente (Sin interes)": 3,
   "Corriente": 1,
-  "Diferido Plus": 3,
-  "Diferido preferente": 3
+  "Diferido Plus (Mixto)": 3,
+  "Diferido Preferente": 3
 };
 
 function generateJSON() {
