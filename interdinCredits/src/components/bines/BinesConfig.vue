@@ -13,6 +13,30 @@
           </button>
         </div>
 
+        <!--Botones de Formateo JSON-->
+        <div class="flex gap-2 mb-4">
+          <button @click="formattingRawJson"
+            class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all">
+            <span>Formateo JSON</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8l6 6v4m-6 6h4a2 2 0 002-2v-4" />
+            </svg>
+          </button>
+
+          <button @click="formattingBeautify"
+            class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all">
+            <span>Beautify</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15.232 5.232l3.536 3.536M9 11l3.586-3.586a2 2 0 012.828 0l1.172 1.172a2 2 0 010 2.828L13 15M6 18h.01" />
+            </svg>
+          </button>
+        </div>
+
+
         <div
           class="bg-gray-50/70 p-4 rounded-lg max-h-[70vh] overflow-y-auto border border-gray-200/30 text-sm font-mono text-gray-800 whitespace-pre-wrap">
           <div v-html="formattedJsonHtml" />
