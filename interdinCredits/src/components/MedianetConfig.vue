@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <button @click="generateJSON" :disabled="selectedPlans.length === 0"
+      <button @click="generateJSON" :disabled="!hasAtLeastOneValidPlan"
         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
         Generar JSON
       </button>
@@ -67,10 +67,8 @@
   </div>
 </template>
 
-
-
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   medianetPlans: {
@@ -90,6 +88,17 @@ const jsonData = ref(null);
 const jsonFormatted = ref('');
 const jsonCompact = ref('');
 
+// Nueva validación computada
+const hasAtLeastOneValidPlan = computed(() => {
+  return selectedPlans.value.some(plan => {
+    // El plan "Corriente" no necesita meses
+    if (plan === 'Corriente') return true;
+
+    const value = selectedValues.value[plan];
+    return value && (typeof value === 'string' ? value.trim() !== '' : true);
+  });
+});
+
 const planToLetterMap = {
   "Plan Pagos Mes a Mes Sin Intereses": "P",
   "Diferido Propio (Con interes)": "P",
@@ -105,6 +114,10 @@ const handleCheckboxChange = (plan, event) => {
     updatedPlans.push(plan);
   } else {
     updatedPlans = updatedPlans.filter((p) => p !== plan);
+    // Limpiar valores al deseleccionar
+    delete selectedValues.value[plan];
+    delete minValues.value[plan];
+    delete maxValues.value[plan];
   }
 
   selectedPlans.value = updatedPlans;
@@ -130,7 +143,6 @@ const generateJSON = () => {
 
     // Manejo específico para el plan "Corriente"
     if (plan === 'Corriente') {
-      // Plan corriente
       result.include.push({
         code: "0",
         groupCode: "C",
@@ -138,10 +150,8 @@ const generateJSON = () => {
         installments: ["0"]
       });
     } else {
-      // Para otros planes (diferidos)
       const installments = selectedValues.value[plan]?.split(',') ?? [];
 
-      // Determinar el tipo según el plan
       let type;
       if (plan === "Plan Pagos Mes a Mes Sin Intereses") {
         type = "06";
@@ -150,27 +160,24 @@ const generateJSON = () => {
         type = plan === "Diferido Propio (Con interes)" ? "01" : "04";
       }
 
-      // Objeto base del plan
       const planObject = {
         code: "0",
         groupCode: letter,
         type,
-        installments
-      };
-
-      // Agregar comportamiento solo si el plan no es "Corriente"
-      planObject.behaviors = [
-        {
-          end: installments.at(-1),
-          start: installments[0],
-          settings: {
-            amount: {
-              max: maxValues.value[plan] ?? 999999,
-              min: minValues.value[plan] ?? 1
+        installments,
+        behaviors: [
+          {
+            end: installments.at(-1),
+            start: installments[0],
+            settings: {
+              amount: {
+                max: maxValues.value[plan] ?? 999999,
+                min: minValues.value[plan] ?? 1
+              }
             }
           }
-        }
-      ];
+        ]
+      };
 
       result.include.push(planObject);
     }

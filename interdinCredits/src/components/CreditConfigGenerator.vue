@@ -1,10 +1,9 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow mt-6">
-    <button @click="generateJSON" :disabled="!props.selectedPlans.length"
+    <button @click="generateJSON" :disabled="!hasAtLeastOneValidPlan"
       class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
       Generar JSON
     </button>
-
 
     <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px]">
       <!-- Columna Izquierda - JSON Formateado -->
@@ -37,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, computed, defineProps } from 'vue';
 
 const props = defineProps({
   selectedPlans: Array,
@@ -45,6 +44,14 @@ const props = defineProps({
   minValues: Object,
   maxValues: Object,
   planToLetterMap: Object
+});
+
+// Verifica si AL MENOS UN plan tiene un mes válido
+const hasAtLeastOneValidPlan = computed(() => {
+  return props.selectedPlans.some(plan => {
+    const value = props.selectedValues[plan];
+    return value && (typeof value === 'string' ? value.trim() !== '' : true);
+  });
 });
 
 const jsonFormatted = ref(null);

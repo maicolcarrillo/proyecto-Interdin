@@ -41,7 +41,7 @@
 
                         <!-- Inputs dinámicos solo si el checkbox está activado -->
                         <div v-if="graceMonthsEnabled[plan]" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <div class="flex flex-col space-y 7">
+                            <div class="flex flex-col space-y-7">
                                 <div v-for="month in [1, 2, 3]" :key="month" class="flex flex-row gap-6">
                                     <!-- Input del Mes -->
                                     <div class="flex-1">
@@ -72,8 +72,8 @@
                     </div>
                 </div>
             </div>
-            <button @click="generateJSON" :disabled="selectedPlans.length === 0" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4 transition-all 
-               disabled:bg-gray-400 disabled:cursor-not-allowed">
+            <button @click="generateJSON" :disabled="!hasAtLeastOneValidPlan" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 mt-4 transition-all 
+                disabled:bg-gray-400 disabled:cursor-not-allowed">
                 Generar JSON
             </button>
             <div v-if="jsonData" class="grid grid-cols-2 gap-6 h-[700px] mt-6">
@@ -86,8 +86,8 @@
                         </button>
                     </div>
                     <pre class="text-green-300 text-sm font-mono flex-1 overflow-auto scrollbar-custom">
-              <code class="bg-gray-800/50 p-2 rounded inline-block min-w-full">{{ jsonFormatted }}</code>
-            </pre>
+                        <code class="bg-gray-800/50 p-2 rounded inline-block min-w-full">{{ jsonFormatted }}</code>
+                    </pre>
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg overflow-hidden flex flex-col">
                     <div class="flex justify-between items-center mb-2">
@@ -98,8 +98,8 @@
                         </button>
                     </div>
                     <pre class="text-green-300 text-sm font-mono flex-1 overflow-auto scrollbar-custom">
-              <code class="bg-gray-800/50 p-2 rounded">{{ jsonCompact }}</code>
-            </pre>
+                        <code class="bg-gray-800/50 p-2 rounded">{{ jsonCompact }}</code>
+                    </pre>
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, computed, defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
     datafastPlans: { type: Array, required: true, default: () => [] }
@@ -121,12 +121,31 @@ const minValues = ref({});
 const maxValues = ref({});
 const graceMonths = ref({});
 const graceMonthsEnabled = ref({});
-const graceMinValues = ref({}); // Montos mínimos para meses de gracia
-const graceMaxValues = ref({}); // Montos máximos para meses de gracia
+const graceMinValues = ref({});
+const graceMaxValues = ref({});
 
 const jsonData = ref(null);
 const jsonFormatted = ref('');
 const jsonCompact = ref('');
+
+// Nueva validación computada
+const hasAtLeastOneValidPlan = computed(() => {
+    return selectedPlans.value.some(plan => {
+        // El plan "Corriente" no necesita meses
+        if (plan === 'Corriente') return true;
+
+        // Verificar meses principales
+        const hasMainMonths = selectedValues.value[plan] &&
+            (typeof selectedValues.value[plan] === 'string' ?
+                selectedValues.value[plan].trim() !== '' : true);
+
+        // Verificar si tiene meses de gracia habilitados
+        const hasGraceMonths = graceMonthsEnabled.value[plan] &&
+            graceMonths.value[plan]?.some(month => month && month.trim() !== '');
+
+        return hasMainMonths || hasGraceMonths;
+    });
+});
 
 const planToLetterMap = {
     "Diferido Propio (Con interes)": "P",
@@ -142,6 +161,14 @@ const handleCheckboxChange = (plan, event) => {
         updatedPlans.push(plan);
     } else {
         updatedPlans = updatedPlans.filter((p) => p !== plan);
+        // Limpiar valores al deseleccionar
+        delete selectedValues.value[plan];
+        delete minValues.value[plan];
+        delete maxValues.value[plan];
+        delete graceMonths.value[plan];
+        delete graceMonthsEnabled.value[plan];
+        delete graceMinValues.value[plan];
+        delete graceMaxValues.value[plan];
     }
 
     selectedPlans.value = updatedPlans;
@@ -170,25 +197,24 @@ const updateGraceMinValues = (plan, index, value) => {
     if (!graceMinValues.value[plan]) {
         graceMinValues.value[plan] = [];
     }
-    graceMinValues.value[plan][index] = value || 1; // Valor por defecto: 1
+    graceMinValues.value[plan][index] = value || 1;
 };
 
 const updateGraceMaxValues = (plan, index, value) => {
     if (!graceMaxValues.value[plan]) {
         graceMaxValues.value[plan] = [];
     }
-    graceMaxValues.value[plan][index] = value || 999999; // Valor por defecto: 999999
+    graceMaxValues.value[plan][index] = value || 999999;
 };
 
 const generateJSON = () => {
     const result = { include: [] };
-    let codeCounter = 1; // Contador para códigos únicos
+    let codeCounter = 1;
 
     selectedPlans.value.forEach((plan) => {
         const letter = planToLetterMap[plan];
 
         if (plan === 'Corriente') {
-            // Plan corriente
             result.include.push({
                 code: "0",
                 groupCode: "C",
@@ -196,7 +222,6 @@ const generateJSON = () => {
                 installments: ["0"]
             });
         } else {
-            // Planes diferidos
             const installments = selectedValues.value[plan]?.split(',') || [];
             const planData = {
                 code: "0",
@@ -219,19 +244,18 @@ const generateJSON = () => {
 
             result.include.push(planData);
 
-            // Si tiene meses de gracia, agregamos un objeto por cada mes de gracia
             if (graceMonthsEnabled.value[plan]) {
                 graceMonths.value[plan].forEach((monthValue, index) => {
-                    if (monthValue) { // Solo agregar si el valor no está vacío
+                    if (monthValue) {
                         const installmentsArray = monthValue.split(',').map(item => item.trim());
                         const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
                         const graceType = plan === "Diferido corriente (Sin interes)" ? "09" : "07";
 
                         result.include.push({
-                            code: codeCounter.toString(), // Código único para cada mes de gracia
-                            groupCode: graceGroupCode, // "D" o "P" según el plan
-                            type: graceType, // "09" o "07" según el plan
-                            installments: installmentsArray, // Valor del mes de gracia (convertido a array)
+                            code: codeCounter.toString(),
+                            groupCode: graceGroupCode,
+                            type: graceType,
+                            installments: installmentsArray,
                             behaviors: [
                                 {
                                     end: installmentsArray.at(-1),
@@ -246,7 +270,7 @@ const generateJSON = () => {
                             ]
                         });
 
-                        codeCounter++; // Incrementar el contador de códigos
+                        codeCounter++;
                     }
                 });
             }
