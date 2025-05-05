@@ -19,7 +19,7 @@
               <label class="block text-sm text-gray-600 mb-1">Monto Mínimo</label>
               <input type="number" :value="minValues[plan]" @input="updateMinValues(plan, $event.target.value)"
                 class="p-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Ej: 1" min="0" />
+                placeholder="Ej: 10" min="0" />
             </div>
             <div>
               <label class="block text-sm text-gray-600 mb-1">Monto Máximo</label>
@@ -124,11 +124,12 @@ const handleCheckboxChange = (plan, event) => {
 };
 
 const updateSelectedValues = (plan, value) => {
-  selectedValues.value = { ...selectedValues.value, [plan]: value };
+  const cleanedValue = value.replace(/[^0-9,]/g, ''); // Permitir solo números y comas
+  selectedValues.value = { ...selectedValues.value, [plan]: cleanedValue };
 };
 
 const updateMinValues = (plan, value) => {
-  minValues.value = { ...minValues.value, [plan]: value || 1 };
+  minValues.value = { ...minValues.value, [plan]: value || 10 };
 };
 
 const updateMaxValues = (plan, value) => {
@@ -136,6 +137,17 @@ const updateMaxValues = (plan, value) => {
 };
 
 const generateJSON = () => {
+  // Validación de los valores minimum y maximum al generar el JSON
+  for (const plan of selectedPlans.value) {
+    const minValue = minValues.value[plan];
+    const maxValue = maxValues.value[plan];
+
+    if (minValue && maxValue && parseFloat(minValue) > parseFloat(maxValue)) {
+      confirm(` ❌ En el plan "${plan}" el valor mínimo no puede ser mayor que el valor máximo. ❌`);
+      return;
+    }
+  }
+
   const result = { include: [] };
 
   selectedPlans.value.forEach((plan) => {
@@ -167,12 +179,12 @@ const generateJSON = () => {
         installments,
         behaviors: [
           {
-            end: installments.at(-1),
-            start: installments[0],
+            end: Math.max(...installments.map(Number)),
+            start: Math.min(...installments.map(Number)),
             settings: {
               amount: {
                 max: maxValues.value[plan] ?? 999999,
-                min: minValues.value[plan] ?? 1
+                min: minValues.value[plan] ?? 10
               }
             }
           }

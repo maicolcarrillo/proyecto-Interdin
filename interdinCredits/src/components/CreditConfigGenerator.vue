@@ -73,6 +73,8 @@ function generateJSON() {
     C: {}, D: {}, L: {}, M: {}, N: {}, P: {}, X: {}
   };
 
+  let hasError = false; // 🔥 Bandera para saber si hubo un error
+
   props.selectedPlans.forEach(plan => {
     const category = props.planToLetterMap[plan];
     const id = planToIdMap[plan];
@@ -83,18 +85,31 @@ function generateJSON() {
         values = [values];
       }
 
-      values.forEach(value => {
+      for (const value of values) {
         if (value) {
+          let min = props.minValues[plan] ? Number(props.minValues[plan]) : 1;
+          let max = props.maxValues[plan] ? Number(props.maxValues[plan]) : 9999999;
+
+          if (min > max) {
+            confirm(`❌ En el plan "${plan}" el valor mínimo no puede ser mayor que el valor máximo. ❌`);
+            hasError = true; // 🔥 Marcamos que hay error
+            break; // 
+          }
+
           result[category][value] = {
-            minimum: props.minValues[plan] ? props.minValues[plan].toString() : "1",
-            maximum: props.maxValues[plan] ? props.maxValues[plan].toString() : "9999999"
+            minimum: min.toString(),
+            maximum: max.toString()
           };
         }
-      });
+      }
     }
   });
 
-  // Agregar "remove": true para los valores no seleccionados en todas las categorías
+  if (hasError) {
+    return; // 🚫 Si hubo error 
+  }
+
+  // 🔵 Si no hay error
   Object.keys(result).forEach(category => {
     for (let i = 1; i <= 61; i++) {
       if (!result[category][i]) {
@@ -107,6 +122,7 @@ function generateJSON() {
   jsonFormatted.value = JSON.stringify(jsonData.value, null, 2);
   jsonCompact.value = JSON.stringify(jsonData.value);
 }
+
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text)

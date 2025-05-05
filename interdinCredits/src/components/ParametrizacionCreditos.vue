@@ -1,7 +1,5 @@
 <template>
-
   <!-- Botón de menú "Bines" -->
-
   <div class="w-full md:max-w-xl mx-auto my-6 relative">
     <!-- Botón -->
     <button @click.prevent="toggleBinesList"
@@ -12,7 +10,6 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
       </svg>
     </button>
-
 
     <!-- Lista desplegable de redes BIN -->
     <transition name="fade">
@@ -34,7 +31,6 @@
   <!-- Componente Hijo: Modal JSON -->
   <BinesConfig :network="selectedNetwork" :visible="showModal" @close="showModal = false" />
 
-
   <!-- Contenido principal -->
   <div class="bg-gray-100 min-h-screen p-4">
     <div class="container mx-auto pt-12 pb-20">
@@ -52,10 +48,8 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div v-for="network in networks" :key="network.name" @click="selectMessage(network.name)"
           class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
-
           <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">{{ network.name }}</h2>
           <p class="text-gray-700 group-hover:text-white">{{ network.description }}</p>
-
         </div>
       </div>
 
@@ -153,6 +147,7 @@ const bines = [
 const selectedNetwork = ref('');
 const showModal = ref(false);
 const mostrarLista = ref(false);
+const toggleState = ref(false);
 
 const abrirModal = (network) => {
   selectedNetwork.value = network;
@@ -170,9 +165,9 @@ const datafastPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin
 
 const networks = [
   { name: 'Interdin', description: 'Red procesadora Interdin.' },
-  { name: 'Medianet', description: 'Red procesadora  Medianet.' },
-  { name: 'Datafast', description: 'Red procesadora  Datafast.' },
-  { name: 'Austro', description: 'Red procesadora  Austro.' },
+  { name: 'Medianet', description: 'Red procesadora Medianet.' },
+  { name: 'Datafast', description: 'Red procesadora Datafast.' },
+  { name: 'Austro', description: 'Red procesadora Austro.' },
 ];
 
 const selectedMessage = ref("");
@@ -216,10 +211,11 @@ const selectMessage = (message) => {
 };
 
 const updateSelectedValues = (plan, value) => {
+  const cleanedValue = value.replace(/[^0-9,]/g, '');
   if (value.includes(',')) {
-    selectedValues.value[plan] = value.split(',').map((v) => v.trim());
+    selectedValues.value[plan] = cleanedValue.split(',').map((v) => v.trim());
   } else {
-    selectedValues.value[plan] = value;
+    selectedValues.value[plan] = cleanedValue;
   }
 };
 </script>
