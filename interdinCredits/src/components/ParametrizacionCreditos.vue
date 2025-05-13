@@ -137,17 +137,9 @@ const planToLetterMap = {
   "Diferido Preferente": "L",
 };
 
-const bines = [
-  { network: 'Interdin', description: 'Banco Dinner Club/Pichincha' },
-  { network: 'Medianet', description: 'Banco Bolivariano/Internacional' },
-  { network: 'Medianet Prod', description: 'Produbanco' },
-  { network: 'Datafast', description: 'Banco Guayaquil/Pacifico' }
-];
-
 const selectedNetwork = ref('');
 const showModal = ref(false);
 const mostrarLista = ref(false);
-const toggleState = ref(false);
 
 const abrirModal = (network) => {
   selectedNetwork.value = network;
@@ -168,6 +160,15 @@ const networks = [
   { name: 'Medianet', description: 'Red procesadora Medianet.' },
   { name: 'Datafast', description: 'Red procesadora Datafast.' },
   { name: 'Austro', description: 'Red procesadora Austro.' },
+];
+
+
+const bines = [
+  { network: 'Interdin', description: 'Banco Dinner Club/Pichincha' },
+  { network: 'Medianet', description: 'Banco Bolivariano/Internacional' },
+  { network: 'Medianet Pro', description: 'Produbanco' },
+  { network: 'Datafast Pac', description: 'Banco Pacifico' },
+  { network: 'Datafast', description: 'Banco Guayaquil' }
 ];
 
 const selectedMessage = ref("");
