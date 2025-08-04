@@ -235,17 +235,16 @@ const generateJSON = () => {
     const result = { include: [] };
 
     // Procesar planes principales
-    for (const plan of selectedPlans.value) {
-        if (plan === 'Corriente') {
-            result.include.push({
-                code: "0",
-                groupCode: "C",
-                type: "00",
-                installments: ["0"]
-            });
-            continue;
-        }
+    if (selectedPlans.value.includes("Corriente")) {
+        result.include.push({
+            code: "0",
+            groupCode: "C",
+            type: "00",
+            installments: ["0"]
+        });
+    }
 
+    for (const plan of selectedPlans.value.filter(p => p !== "Corriente")) {
         const minVal = parseFloat(minValues.value[plan]) || 10;
         const maxVal = parseFloat(maxValues.value[plan]) || 999999;
 

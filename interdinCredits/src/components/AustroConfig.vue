@@ -247,18 +247,21 @@ const generateJSON = () => {
         }
     }
 
-    // Procesar planes principales
-    selectedPlans.value.forEach((plan) => {
+    // Primero, agregar el plan Corriente si está
+    if (selectedPlans.value.includes("Corriente")) {
+        result.include.push({
+            code: "0",
+            groupCode: "C",
+            type: "0",
+            installments: ["0"]
+        });
+    }
+
+    // Luego, procesar el resto de planes
+    selectedPlans.value.filter(p => p !== "Corriente").forEach((plan) => {
         const letter = planToLetterMap[plan];
 
-        if (plan === 'Corriente') {
-            result.include.push({
-                code: "0",
-                groupCode: "C",
-                type: "0",
-                installments: ["0"]
-            });
-        } else if (plan === "Diferido Sin interes especial") {
+        if (plan === "Diferido Sin interes especial") {
             const installments = selectedValues.value[plan]?.split(',') || [];
             result.include.push({
                 code: "0",

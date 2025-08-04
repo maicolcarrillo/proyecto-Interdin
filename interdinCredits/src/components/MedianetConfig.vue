@@ -150,21 +150,23 @@ const generateJSON = () => {
 
   const result = { include: [] };
 
-  selectedPlans.value.forEach((plan) => {
-    let letter = planToLetterMap[plan];
+  if (selectedPlans.value.includes("Corriente")) {
+    result.include.push({
+      code: "0",
+      groupCode: "C",
+      type: "00",
+      installments: ["0"]
+    });
+  }
 
-    // Manejo específico para el plan "Corriente"
-    if (plan === 'Corriente') {
-      result.include.push({
-        code: "0",
-        groupCode: "C",
-        type: "00",
-        installments: ["0"]
-      });
-    } else {
+  selectedPlans.value
+    .filter(plan => plan !== "Corriente")
+    .forEach((plan) => {
       const installments = selectedValues.value[plan]?.split(',') ?? [];
 
+      let letter = planToLetterMap[plan];
       let type;
+
       if (plan === "Plan Pagos Mes a Mes Sin Intereses") {
         type = "06";
         letter = "D";
@@ -192,9 +194,9 @@ const generateJSON = () => {
       };
 
       result.include.push(planObject);
-    }
-  });
+    });
 
+  // Generar JSONs formateado y compacto
   jsonData.value = result;
   jsonFormatted.value = JSON.stringify(result, null, 2);
   jsonCompact.value = JSON.stringify(result);

@@ -87,7 +87,7 @@ function generateJSON() {
 
       for (const value of values) {
         if (value) {
-          let min = props.minValues[plan] ? Number(props.minValues[plan]) : 1;
+          let min = props.minValues[plan] ? Number(props.minValues[plan]) : 10;
           let max = props.maxValues[plan] ? Number(props.maxValues[plan]) : 9999999;
 
           if (min > max) {
