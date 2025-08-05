@@ -120,8 +120,8 @@ const emit = defineEmits(['update:json']);
 
 // Planes elegibles para meses de gracia
 const graceEligiblePlans = [
-    "Diferido Propio (Con interes)",
-    "Diferido corriente (Sin interes)"
+    "Diferido Con interes",
+    "Diferido Sin interes"
 ];
 
 // Estado para planes principales
@@ -132,23 +132,23 @@ const maxValues = ref({});
 
 //  Meses de gracia 
 const graceMonths = ref({
-    "Diferido Propio (Con interes)": ['', '', ''],
-    "Diferido corriente (Sin interes)": ['', '', '']
+    "Diferido Con interes": ['', '', ''],
+    "Diferido Sin interes": ['', '', '']
 });
 
 const graceMonthsEnabled = ref({
-    "Diferido Propio (Con interes)": false,
-    "Diferido corriente (Sin interes)": false
+    "Diferido Con interes": false,
+    "Diferido Sin interes": false
 });
 
 const graceMinValues = ref({
-    "Diferido Propio (Con interes)": ['', '', ''],
-    "Diferido corriente (Sin interes)": ['', '', '']
+    "Diferido Con interes": ['', '', ''],
+    "Diferido Sin interes": ['', '', '']
 });
 
 const graceMaxValues = ref({
-    "Diferido Propio (Con interes)": ['', '', ''],
-    "Diferido corriente (Sin interes)": ['', '', '']
+    "Diferido Con interes": ['', '', ''],
+    "Diferido Sin interes": ['', '', '']
 });
 
 const jsonData = ref(null);
@@ -173,8 +173,8 @@ const hasAtLeastOneValidPlan = computed(() => {
 
 const planToLetterMap = {
     "Diferido Sin interes especial": "X",
-    "Diferido Propio (Con interes)": "P",
-    "Diferido corriente (Sin interes)": "D",
+    "Diferido Con interes": "P",
+    "Diferido Sin interes": "D",
     "Corriente": "CorrienteConfig",
 };
 
@@ -273,8 +273,8 @@ const generateJSON = () => {
                     end: installments.at(-1),
                     settings: {
                         amount: {
-                            min: minValues.value[plan] || 10,
-                            max: maxValues.value[plan] || 999999
+                            min: parseFloat(minValues.value[plan] || 10),
+                            max: parseFloat(maxValues.value[plan] || 999999)
                         }
                     }
                 }]
@@ -286,7 +286,7 @@ const generateJSON = () => {
             result.include.push({
                 code: "0",
                 groupCode: letter,
-                type: plan === "Diferido Propio (Con interes)" ? "2" : "3",
+                type: plan === "Diferido Con interes" ? "2" : "3",
                 installments: installments,
                 behaviors: [
                     {
@@ -294,8 +294,8 @@ const generateJSON = () => {
                         start: Math.min(...installments.map(Number)),
                         settings: {
                             amount: {
-                                max: maxValues.value[plan] || 999999,
-                                min: minValues.value[plan] || 10
+                                max: parseFloat(maxValues.value[plan] || 999999),
+                                min: parseFloat(minValues.value[plan] || 10)
                             }
                         }
                     }
@@ -313,7 +313,7 @@ const generateJSON = () => {
             if (!monthValue || monthValue.trim() === '') continue;
 
             const installmentsArray = monthValue.split(',').filter(Boolean);
-            const graceGroupCode = plan === "Diferido corriente (Sin interes)" ? "D" : "P";
+            const graceGroupCode = plan === "Diferido Sin interes" ? "D" : "P";
 
             let graceType;
             if (graceGroupCode === "P") {
@@ -341,8 +341,8 @@ const generateJSON = () => {
                         start: Math.min(...installmentsArray.map(Number)),
                         settings: {
                             amount: {
-                                max: graceMax,
-                                min: graceMin
+                                max: parseFloat(graceMax),
+                                min: parseFloat(graceMin)
                             }
                         }
                     }

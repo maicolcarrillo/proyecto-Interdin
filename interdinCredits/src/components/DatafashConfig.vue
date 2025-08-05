@@ -267,8 +267,8 @@ const generateJSON = () => {
                     start: Math.min(...installments.map(Number)),
                     settings: {
                         amount: {
-                            max: maxVal,
-                            min: minVal
+                            max: parseFloat(maxVal),
+                            min: parseFloat(minVal)
                         }
                     }
                 }
