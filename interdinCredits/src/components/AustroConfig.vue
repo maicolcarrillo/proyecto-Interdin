@@ -11,9 +11,9 @@
                             class="w-5 h-5 text-blue-500 accent-blue-600" />
                         <span class="font-medium text-gray-700">{{ plan }}</span>
                     </label>
-                    <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'"
+                    <div v-if="selectedPlans.includes(plan)"
                         class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <input type="text" :value="selectedValues[plan]"
+                        <input v-if="plan !== 'Corriente'" type="text" :value="selectedValues[plan]"
                             @input="updateSelectedValues(plan, $event.target.value)"
                             class="p-2 mt-5 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="En meses" />
@@ -253,7 +253,19 @@ const generateJSON = () => {
             code: "0",
             groupCode: "C",
             type: "0",
-            installments: ["0"]
+            installments: ["0"],
+            behaviors: [
+                {
+                    end: 1,
+                    start: 1,
+                    settings: {
+                        amount: {
+                            max: parseFloat(maxValues.value["Corriente"] ?? 999999),
+                            min: parseFloat(minValues.value["Corriente"] ?? 10)
+                        }
+                    }
+                }
+            ]
         });
     }
 
