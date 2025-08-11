@@ -1,32 +1,109 @@
 <template>
-  <!-- Botón de menú "Bines" -->
-  <div class="w-full md:max-w-xl mx-auto my-6 relative">
-    <!-- Botón -->
-    <button @click.prevent="toggleBinesList"
-      class="w-full bg-white text-gray-900 text-sm font-medium text-center rounded-md shadow-md py-3 px-6 flex items-center justify-center gap-2 transition duration-300 hover:bg-black hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-black">
-      Bines
-      <svg :class="{ 'rotate-180': mostrarLista }" class="w-4 h-4 transition-transform duration-200" fill="none"
-        stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-
-    <!-- Lista desplegable de redes BIN -->
-    <transition name="fade">
-      <div v-if="mostrarLista"
-        class="absolute left-0 right-0 z-10 bg-white rounded-md shadow-md border border-gray-200 mt-2 overflow-hidden">
-        <ul class="divide-y divide-gray-200">
-          <li v-for="(bin, index) in bines" :key="index" @click="abrirModal(bin.network)"
-            class="px-6 py-3 cursor-pointer transition-all duration-200 ease-out hover:scale-[1.02] hover:bg-black hover:text-white group">
-            <div class="flex items-center justify-between">
-              <span class="font-medium group-hover:text-white">{{ bin.network }}</span>
-              <span class="text-sm group-hover:text-gray-300">{{ bin.description }}</span>
-            </div>
-          </li>
-        </ul>
+  <!-- Banner de emergencia -->
+  <div id="banner" class="fixed inset-x-0 bottom-0 pb-2 sm:pb-5 z-50">
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <div class="rounded-lg bg-indigo-600 p-2 shadow-lg sm:p-3">
+        <div class="flex flex-wrap items-center justify-between">
+          <div class="flex w-0 flex-1 items-center">
+            <span class="flex rounded-lg bg-indigo-800 p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="h-6 w-6 text-white">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
+                </path>
+              </svg>
+            </span>
+            <p class="ml-3 truncate font-medium text-white">
+              <span class="hidden md:inline">
+                Estamos realizando mejoras en la Herramienta de Tipo de Créditos para
+                incluir otros países.<br>
+                Estos cambios no aplicarán al Tipo de Créditos de Ecuador.
+              </span>
+            </p>
+          </div>
+          <div class="order-2 flex-shrink-0 sm:order-3 sm:ml-2">
+            <button type="button" onclick="this.closest('#banner').remove()"
+              class="-mr-1 flex rounded-md p-2 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white">
+              <span class="sr-only">Cerrar</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="h-6 w-6 text-white">
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
-    </transition>
+    </div>
   </div>
+  <!-- Banner de emergencia -->
+
+
+
+  <div class="flex items-start gap-4 my-6 justify-center">
+    <!-- Botón Países -->
+    <div class="relative w-64">
+      <button @click.prevent="togglePaisList"
+        class="w-full bg-white text-gray-900 text-sm font-medium text-center rounded-md shadow-md py-3 px-6 flex items-center justify-center gap-2 transition duration-300 hover:bg-black hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-black">
+        {{ paisSeleccionado || 'Selecciona un país' }}
+        <svg :class="{ 'rotate-180': mostrarListaPais }" class="w-4 h-4 transition-transform duration-200" fill="none"
+          stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <transition name="fade">
+        <div v-if="mostrarListaPais"
+          class="absolute left-0 w-full bg-white rounded-md shadow-md border border-gray-200 mt-2 overflow-hidden">
+          <ul class="divide-y divide-gray-200">
+            <li>
+              <button @click="seleccionarPais('Ecuador')"
+                class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
+                <img src="https://flagcdn.com/w20/ec.png" alt="Ecuador" class="w-5 h-auto rounded-sm">
+                <span>Ecuador</span>
+              </button>
+            </li>
+            <li>
+              <button @click="$router.push('/costa-rica')"
+                class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
+                <img src="https://flagcdn.com/w20/cr.png" alt="Costa Rica" class="w-5 h-auto rounded-sm">
+                <span>Costa Rica</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </transition>
+    </div>
+
+    <!-- Botón Bines -->
+    <div class="relative w-64">
+      <button @click.prevent="toggleBinesList"
+        class="w-full bg-white text-gray-900 text-sm font-medium text-center rounded-md shadow-md py-3 px-6 flex items-center justify-center gap-2 transition duration-300 hover:bg-black hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-black">
+        Bines
+        <svg :class="{ 'rotate-180': mostrarLista }" class="w-4 h-4 transition-transform duration-200" fill="none"
+          stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <transition name="fade">
+        <div v-if="mostrarLista"
+          class="absolute left-0 min-w-[20rem] bg-white rounded-md shadow-md border border-gray-200 mt-2 overflow-hidden z-50">
+          <ul class="divide-y divide-gray-200">
+            <li v-for="(bin, index) in bines" :key="index" @click="abrirModal(bin.network)"
+              class="px-6 py-3 cursor-pointer transition-all duration-200 ease-out hover:scale-[1.02] hover:bg-black hover:text-white group">
+              <div class="flex items-center justify-between">
+                <span class="font-medium group-hover:text-white">{{ bin.network }}</span>
+                <span class="text-sm group-hover:text-gray-300">{{ bin.description }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </transition>
+    </div>
+  </div>
+
 
   <!-- Componente Hijo: Modal JSON -->
   <BinesConfig :network="selectedNetwork" :visible="showModal" @close="showModal = false" />
@@ -120,6 +197,21 @@
 </template>
 
 <script setup>
+
+//Tipo de creditos por paises
+
+const paisSeleccionado = ref('')
+const mostrarListaPais = ref(false)
+
+const togglePaisList = () => {
+  mostrarListaPais.value = !mostrarListaPais.value
+}
+
+const seleccionarPais = (pais) => {
+  paisSeleccionado.value = pais
+  mostrarListaPais.value = false
+}
+
 import { ref, watch } from 'vue';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
