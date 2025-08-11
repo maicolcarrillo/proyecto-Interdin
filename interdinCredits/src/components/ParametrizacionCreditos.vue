@@ -243,9 +243,9 @@ const toggleBinesList = () => {
 };
 
 const plans = Object.keys(planToLetterMap);
-const medianetPlans = ["Plan Pagos Mes a Mes Sin Intereses", "Diferido Propio (Con interes)", "Diferido Corriente (Sin interes)", "Corriente"];
-const autroPlans = ["Diferido Sin interes especial", "Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
-const datafastPlans = ["Diferido Propio (Con interes)", "Diferido corriente (Sin interes)", "Corriente"];
+const medianetPlans = ["Plan Pagos Mes a Mes Sin Intereses", "Diferido Con interes", "Diferido Sin interes", "Corriente"];
+const autroPlans = ["Diferido Sin interes especial", "Diferido Con interes", "Diferido Sin interes", "Corriente"];
+const datafastPlans = ["Diferido Con interes", "Diferido Sin interes", "Corriente"];
 
 const networks = [
   { name: 'Interdin', description: 'Red procesadora Interdin.' },

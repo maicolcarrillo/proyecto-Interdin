@@ -10,9 +10,10 @@
             <span class="font-medium text-gray-700">{{ plan }}</span>
           </label>
 
-          <div v-if="selectedPlans.includes(plan) && plan !== 'Corriente'"
+          <div v-if="selectedPlans.includes(plan)"
             class="grid grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <input type="text" :value="selectedValues[plan]" @input="updateSelectedValues(plan, $event.target.value)"
+            <input v-if="plan !== 'Corriente'" type="text" :value="selectedValues[plan]"
+              @input="updateSelectedValues(plan, $event.target.value)"
               class="p-2 mt-5 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="En meses" />
             <div>
@@ -101,8 +102,8 @@ const hasAtLeastOneValidPlan = computed(() => {
 
 const planToLetterMap = {
   "Plan Pagos Mes a Mes Sin Intereses": "P",
-  "Diferido Propio (Con interes)": "P",
-  "Diferido Corriente (Sin interes)": "D",
+  "Diferido Con interes": "P",
+  "Diferido Sin interes": "D",
   "Corriente": "CorrienteConfig",
 };
 
@@ -155,7 +156,19 @@ const generateJSON = () => {
       code: "0",
       groupCode: "C",
       type: "00",
-      installments: ["0"]
+      installments: ["0"],
+      behaviors: [
+        {
+          end: 1,
+          start: 1,
+          settings: {
+            amount: {
+              max: parseFloat(maxValues.value["Corriente"] ?? 999999),
+              min: parseFloat(minValues.value["Corriente"] ?? 10)
+            }
+          }
+        }
+      ]
     });
   }
 
@@ -171,7 +184,7 @@ const generateJSON = () => {
         type = "06";
         letter = "D";
       } else {
-        type = plan === "Diferido Propio (Con interes)" ? "01" : "04";
+        type = plan === "Diferido Con interes" ? "01" : "04";
       }
 
       const planObject = {
@@ -185,8 +198,8 @@ const generateJSON = () => {
             start: Math.min(...installments.map(Number)),
             settings: {
               amount: {
-                max: maxValues.value[plan] ?? 999999,
-                min: minValues.value[plan] ?? 10
+                max: parseFloat(maxValues.value[plan] ?? 999999),
+                min: parseFloat(minValues.value[plan] ?? 10)
               }
             }
           }
