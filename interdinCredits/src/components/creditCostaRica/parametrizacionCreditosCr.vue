@@ -15,14 +15,14 @@
                     class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
                     <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">BCR</h2>
                     <p class="text-gray-700 group-hover:text-white">
-                        Red procesadora BCR Costa Rica
+                        Adquirente BCR Costa Rica
                     </p>
                 </div>
                 <div @click="selectMessage('Davivienda CR')"
                     class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
                     <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">Davivienda CR</h2>
                     <p class="text-gray-700 group-hover:text-white">
-                        Red procesadora Davivienda Costa Rica
+                        Adquirente Davivienda Costa Rica
                     </p>
                 </div>
             </div>

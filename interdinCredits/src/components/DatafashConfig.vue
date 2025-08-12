@@ -243,8 +243,8 @@ const generateJSON = () => {
             installments: ["0"],
             behaviors: [
                 {
-                    end: 1,
-                    start: 1,
+                    end: 0,
+                    start: 0,
                     settings: {
                         amount: {
                             max: parseFloat(maxValues.value["Corriente"] ?? 999999),
