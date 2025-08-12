@@ -5,7 +5,7 @@
                 Bienvenido a parametrización de tipo de créditos Costa Rica
             </h1>
             <p class="text-gray-700 text-lg text-center mb-12">
-                Debes seleccionar la red procesadora correspondiente
+                Debes seleccionar el adquirente correspondiente
             </p>
             <p v-if="selectedMessage" class="text-center text-lg font-semibold text-blue-600 mb-6 mt-8">
                 {{ selectedMessage }}
