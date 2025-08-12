@@ -1,18 +1,25 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory
+} from "vue-router";
+import ParametrizacionCreditos from "@/components/ParametrizacionCreditos.vue";
 import ParametrizacionCreditosCr from "@/components/creditCostaRica/parametrizacionCreditosCr.vue";
 
-const routes = [
+const routes = [{
+    path: "/",
+    component: ParametrizacionCreditos,
+    name: "ecuador"
+  },
   {
     path: "/costa-rica",
-    name: "CostaRica",
     component: ParametrizacionCreditosCr,
-  },
-  // puedes agregar más rutas aquí
+    name: "costa-rica"
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
 export default router;

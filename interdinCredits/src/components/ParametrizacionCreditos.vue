@@ -39,8 +39,6 @@
   </div>
   <!-- Banner de emergencia -->
 
-
-
   <div class="flex items-start gap-4 my-6 justify-center">
     <!-- Botón Países -->
     <div class="relative w-64">
@@ -58,14 +56,14 @@
           class="absolute left-0 w-full bg-white rounded-md shadow-md border border-gray-200 mt-2 overflow-hidden">
           <ul class="divide-y divide-gray-200">
             <li>
-              <button @click="seleccionarPais('Ecuador')"
+              <button @click="redirigirAPais('ecuador')"
                 class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
                 <img src="https://flagcdn.com/w20/ec.png" alt="Ecuador" class="w-5 h-auto rounded-sm">
                 <span>Ecuador</span>
               </button>
             </li>
             <li>
-              <button @click="$router.push('/costa-rica')"
+              <button @click="redirigirAPais('costa-rica')"
                 class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
                 <img src="https://flagcdn.com/w20/cr.png" alt="Costa Rica" class="w-5 h-auto rounded-sm">
                 <span>Costa Rica</span>
@@ -76,8 +74,8 @@
       </transition>
     </div>
 
-    <!-- Botón Bines -->
-    <div class="relative w-64">
+    <!-- Botón Bines (SOLO para Ecuador) -->
+    <div v-if="paisSeleccionado === 'Ecuador'" class="relative w-64">
       <button @click.prevent="toggleBinesList"
         class="w-full bg-white text-gray-900 text-sm font-medium text-center rounded-md shadow-md py-3 px-6 flex items-center justify-center gap-2 transition duration-300 hover:bg-black hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-black">
         Bines
@@ -104,12 +102,11 @@
     </div>
   </div>
 
-
   <!-- Componente Hijo: Modal JSON -->
   <BinesConfig :network="selectedNetwork" :visible="showModal" @close="showModal = false" />
 
-  <!-- Contenido principal -->
-  <div class="bg-gray-100 min-h-screen p-4">
+  <!-- Contenido principal (solo para Ecuador) -->
+  <div v-if="!$route.path.includes('costa-rica')" class="bg-gray-100 min-h-screen p-4">
     <div class="container mx-auto pt-12 pb-20">
       <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">
         Bienvenido a parametrización de tipo de créditos Ecuador
@@ -197,27 +194,36 @@
 </template>
 
 <script setup>
-
-//Tipo de creditos por paises
-
-const paisSeleccionado = ref('')
-const mostrarListaPais = ref(false)
-
-const togglePaisList = () => {
-  mostrarListaPais.value = !mostrarListaPais.value
-}
-
-const seleccionarPais = (pais) => {
-  paisSeleccionado.value = pais
-  mostrarListaPais.value = false
-}
-
 import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
 import DatafashConfig from './DatafashConfig.vue';
 import AustroConfig from './AustroConfig.vue';
 import BinesConfig from './bines/BinesConfig.vue';
+
+const router = useRouter();
+
+// Funcionalidad de selección de país
+const paisSeleccionado = ref('Ecuador');
+const mostrarListaPais = ref(false);
+
+const togglePaisList = () => {
+  mostrarListaPais.value = !mostrarListaPais.value;
+};
+
+const redirigirAPais = (pais) => {
+  mostrarListaPais.value = false;
+  paisSeleccionado.value = pais === 'ecuador' ? 'Ecuador' : 'Costa Rica';
+
+  if (pais === 'ecuador') {
+    router.push('/ecuador');
+  } else {
+    router.push('/costa-rica');
+  }
+};
+
+// Tipos de Créditos
 
 const planToLetterMap = {
   "Plan Pagos Normal": "N",
@@ -253,7 +259,6 @@ const networks = [
   { name: 'Datafast', description: 'Red procesadora Datafast.' },
   { name: 'Austro', description: 'Red procesadora Austro.' },
 ];
-
 
 const bines = [
   { network: 'Interdin', description: 'Banco Dinner Club/Pichincha' },
