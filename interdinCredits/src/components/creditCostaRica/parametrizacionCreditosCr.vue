@@ -31,6 +31,11 @@
                 </div>
             </div>
 
+            <!-- Vista de configuración para BCR -->
+            <div v-else-if="selectedAcquirer === 'BCR' && excelData">
+                <BCRConfig :excelData="excelData" @back="resetSelection" />
+            </div>
+
             <!-- Vista de carga de archivos -->
             <div v-else>
                 <div class="text-center mb-8">
@@ -42,26 +47,30 @@
                     </p>
                 </div>
 
-                <!-- Componente de carga -->
-                <div class="py-8 bg-white px-2 rounded-lg shadow-md">
+                <!-- Componente de carga con estilo específico -->
+                <div class="py-20 bg-white px-2">
                     <div class="max-w-md mx-auto rounded-lg overflow-hidden md:max-w-xl">
                         <div class="md:flex">
                             <div class="w-full p-3">
                                 <div
-                                    class="relative border-dotted h-48 rounded-lg border-dashed border-2 border-back-700 bg-gray-100 flex justify-center items-center">
+                                    class="relative border-dotted h-48 rounded-lg border-dashed border-2 border-black-700 bg-gray-100 flex justify-center items-center">
                                     <div class="absolute">
                                         <div class="flex flex-col items-center">
                                             <i class="fa fa-folder-open fa-4x text-black-700"></i>
                                             <span class="block text-gray-400 font-normal mt-2">Arrastre el archivo Excel
-                                                aquí o haga clic para seleccionar</span>
+                                                aquí</span>
+                                            <span class="block text-grBclay-400 text-sm">o haga clic para
+                                                seleccionar</span>
                                         </div>
                                     </div>
-                                    <input type="file" class="h-full w-full opacity-0 cursor-pointer" multiple>
+                                    <input type="file" class="h-full w-full opacity-0 cursor-pointer"
+                                        accept=".xlsx, .xls, .csv" @change="handleFileUpload" ref="fileInput">
                                 </div>
                                 <div class="mt-4 text-center">
                                     <button
-                                        class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-300 shadow-md hover:shadow-lg border border-gray-700">
-                                        Subir Archivos
+                                        class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-300 shadow-md hover:shadow-lg border border-gray-700"
+                                        :disabled="!file" @click="processExcel">
+                                        Procesar Archivo
                                     </button>
                                 </div>
                             </div>
@@ -71,7 +80,7 @@
 
                 <!-- Botón para volver -->
                 <div class="text-center mt-8">
-                    <button @click="selectedAcquirer = ''"
+                    <button @click="resetSelection"
                         class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
                         ← Volver a la selección
                     </button>
@@ -83,9 +92,14 @@
 
 <script setup>
 import { ref } from 'vue';
+import * as XLSX from 'xlsx';
+import BCRConfig from './bcrConfig.vue';
 
 const selectedMessage = ref("");
 const selectedAcquirer = ref("");
+const file = ref(null);
+const excelData = ref(null);
+const fileInput = ref(null);
 
 const selectAcquirer = (message) => {
     selectedMessage.value = `Has seleccionado ${message}.`;
@@ -97,6 +111,36 @@ const selectAcquirer = (message) => {
         link.rel = 'stylesheet';
         link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
         document.head.appendChild(link);
+    }
+};
+
+const handleFileUpload = (event) => {
+    file.value = event.target.files[0];
+};
+
+const processExcel = async () => {
+    if (!file.value) return;
+
+    try {
+        const data = await file.value.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { raw: false });
+
+        excelData.value = jsonData;
+    } catch (error) {
+        console.error("Error al procesar el Excel:", error);
+        alert("Error al procesar el archivo. Asegúrese de que es un Excel válido.");
+    }
+};
+
+const resetSelection = () => {
+    selectedAcquirer.value = "";
+    selectedMessage.value = "";
+    file.value = null;
+    excelData.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = "";
     }
 };
 </script>
