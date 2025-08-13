@@ -5,7 +5,7 @@
     "redirects": [
       {
         "source": "/",
-        "destination": "/index.html",
+        "destination": "/ecuador",
         "type": 301
       }
     ]
