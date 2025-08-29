@@ -36,8 +36,6 @@
             <div class="bg-gray-800 rounded-lg p-4 overflow-x-auto">
                 <pre class="text-green-400 text-sm font-mono">{{ displayedJson }}</pre>
             </div>
-
-            <!-- Se eliminó el botón Volver duplicado del footer -->
         </div>
     </div>
 </template>
@@ -57,39 +55,52 @@ const showCompressed = ref(false);
 
 // Formatea los datos del Excel a la estructura JSON deseada
 const jsonStructure = computed(() => {
-    // Filtrar y validar las filas que tienen BIN, start y end
-    const validRanges = props.excelData
+    // Obtener todos los ranges únicos
+    const allRanges = props.excelData
         .filter(row => row.BIN && row.start && row.end)
         .map(row => ({
             bin: row.BIN.toString(),
             start: row.start.toString(),
             end: row.end.toString()
         }));
+    
+    // Eliminar ranges duplicados
+    const uniqueRanges = allRanges.filter((range, index, self) =>
+        index === self.findIndex(r => 
+            r.bin === range.bin && 
+            r.start === range.start && 
+            r.end === range.end
+        )
+    );
 
-    // Filtrar y validar las filas que tienen datos de crédito
-    const validCredits = props.excelData
-        .filter(row => row.typesCredit && row.terminalNumber && row.merchantCode)
-        .map(row => {
+    // Obtener todos los credits únicos por typesCredit
+    const creditsMap = new Map();
+    
+    props.excelData.forEach(row => {
+        if (!row.typesCredit) return;
+        
+        const creditType = row.typesCredit;
+        if (!creditsMap.has(creditType)) {
             // Parsear el installment desde typesCredit (ej: "03BCR" -> 3)
-            const creditCode = row.typesCredit;
-            const installment = parseInt(creditCode.replace(/\D/g, '')) || 0;
-
-            // Formatear el code con ceros a la izquierda (ej: 3 -> "03")
+            const installment = parseInt(creditType.replace(/\D/g, '')) || 0;
             const formattedInstallment = installment.toString().padStart(2, '0');
-
-            return {
-                code: `0${formattedInstallment}BCR`, // Formato: 0XBCR
+            
+            creditsMap.set(creditType, {
+                code: `0${formattedInstallment}BCR`,
                 description: `PLAN 0% ${installment} CUOTAS`,
                 installment: installment,
-                merchantCode: row.merchantCode.toString(),
-                terminalNumber: row.terminalNumber.toString()
-            };
-        });
+                merchantCode: row.merchantCode?.toString() || '',
+                terminalNumber: row.terminalNumber?.toString() || ''
+            });
+        }
+    });
+    
+    const uniqueCredits = Array.from(creditsMap.values());
 
     return {
         include: [{
-            ranges: validRanges,
-            credits: validCredits
+            ranges: uniqueRanges,
+            credits: uniqueCredits
         }]
     };
 });
