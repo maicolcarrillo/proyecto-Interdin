@@ -36,15 +36,51 @@
                 <BCRConfig :excelData="excelData" @back="resetSelection" />
             </div>
 
+            <!-- Vista de configuración para Davivienda -->
+            <div v-else-if="selectedAcquirer === 'Davivienda CR' && excelData">
+                <DaviviendaConfig :excelData="excelData" @back="resetSelection" />
+            </div>
+
             <!-- Vista de carga de archivos -->
             <div v-else>
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-800 mb-2">
                         Carga de documentos para {{ selectedAcquirer }}
                     </h1>
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 mb-4">
                         Por favor suba el archivo Excel requerido para continuar
                     </p>
+
+                    <!-- Aviso sobre la estructura -->
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-3xl mx-auto shadow-sm">
+                        <p class="text-yellow-700 font-medium mb-3">
+                            ⚠️ Importante: el archivo Excel debe contener las siguientes columnas
+                        </p>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border border-gray-300 rounded-lg text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-3 py-2 border">terminalNumber</th>
+                                        <th class="px-3 py-2 border">merchantCode</th>
+                                        <th class="px-3 py-2 border">typesCredit</th>
+                                        <th class="px-3 py-2 border">bin</th>
+                                        <th class="px-3 py-2 border">start</th>
+                                        <th class="px-3 py-2 border">end</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center">
+                                        <td class="px-3 py-2 border">10107385</td>
+                                        <td class="px-3 py-2 border">011142500120000</td>
+                                        <td class="px-3 py-2 border">03CDU / 03BCR</td>
+                                        <td class="px-3 py-2 border">411757</td>
+                                        <td class="px-3 py-2 border">41175734</td>
+                                        <td class="px-3 py-2 border">41175760</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Componente de carga con estilo específico -->
@@ -91,8 +127,10 @@
 </template>
 
 <script setup>
+
 import { ref } from 'vue';
 import * as XLSX from 'xlsx';
+import DaviviendaConfig from './daviviendaConfig.vue';
 import BCRConfig from './bcrConfig.vue';
 
 const selectedMessage = ref("");

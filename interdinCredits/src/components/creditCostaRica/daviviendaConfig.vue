@@ -63,38 +63,38 @@ const jsonStructure = computed(() => {
             start: row.start.toString(),
             end: row.end.toString()
         }));
-    
+
     // Eliminar ranges duplicados
     const uniqueRanges = allRanges.filter((range, index, self) =>
-        index === self.findIndex(r => 
-            r.bin === range.bin && 
-            r.start === range.start && 
+        index === self.findIndex(r =>
+            r.bin === range.bin &&
+            r.start === range.start &&
             r.end === range.end
         )
     );
 
     // Obtener todos los credits únicos por typesCredit
     const creditsMap = new Map();
-    
+
     props.excelData.forEach(row => {
         if (!row.typesCredit) return;
-        
+
         const creditType = row.typesCredit;
         if (!creditsMap.has(creditType)) {
             // Parsear el installment desde typesCredit (ej: "03BCR" -> 3)
             const installment = parseInt(creditType.replace(/\D/g, '')) || 0;
             const formattedInstallment = installment.toString().padStart(2, '0');
-            
+
             creditsMap.set(creditType, {
-                code: `${formattedInstallment}BCR`,
-                description: `PLAN 0% ${installment} CUOTAS`,
+                code: `${formattedInstallment}CDU`,
+                description: `A paguitos`,// A paguitos
                 installment: installment,
                 merchantCode: row.merchantCode?.toString() || '',
                 terminalNumber: row.terminalNumber?.toString() || ''
             });
         }
     });
-    
+
     const uniqueCredits = Array.from(creditsMap.values());
 
     return {
