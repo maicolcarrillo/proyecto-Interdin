@@ -69,6 +69,13 @@
                 <span>Costa Rica</span>
               </button>
             </li>
+            <li>
+              <button @click="redirigirAPais('honduras')"
+                class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
+                <img src="https://flagcdn.com/w20/hn.png" alt="Costa Rica" class="w-5 h-auto rounded-sm">
+                <span>Honduras</span>
+              </button>
+            </li>
           </ul>
         </div>
       </transition>
