@@ -4,7 +4,7 @@
             <!-- Vista de selección de adquirente Cards-->
             <div v-if="!selectedAcquirer">
                 <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">
-                    Bienvenido a parametrización de tipo de créditos Costa Rica
+                    Bienvenido a parametrización de tipo de créditos Honduras
                 </h1>
                 <p class="text-gray-700 text-lg text-center mb-12">
                     Debes seleccionar el adquirente correspondiente
@@ -16,9 +16,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div @click="selectAcquirer('BCR')"
                         class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
-                        <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">BCR</h2>
+                        <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">Honduras</h2>
                         <p class="text-gray-700 group-hover:text-white">
-                            Adquirente BCR Costa Rica
+                            Parametrización de créditos en Honduras
                         </p>
                     </div>
                 </div>

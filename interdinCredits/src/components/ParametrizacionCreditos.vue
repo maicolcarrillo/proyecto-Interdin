@@ -112,14 +112,14 @@
   <!-- Componente Hijo: Modal JSON -->
   <BinesConfig :network="selectedNetwork" :visible="showModal" @close="showModal = false" />
 
-  <!-- Contenido principal (solo para Ecuador) -->
-  <div v-if="!$route.path.includes('costa-rica')" class="bg-gray-100 min-h-screen p-4">
+  <!-- Contenido principal (solo para países no excluidos) -->
+  <div v-if="showContent" class="bg-gray-100 min-h-screen p-4">
     <div class="container mx-auto pt-12 pb-20">
       <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">
-        Bienvenido a parametrización de tipo de créditos Ecuador
+        Bienvenido a parametrización de tipo de créditos {{ currentCountryName }}
       </h1>
       <p class="text-gray-700 text-lg text-center mb-12">
-        Debes seleccionar la red procesadora correspondiente
+        {{ countryConfig.description }}
       </p>
 
       <p v-if="selectedMessage" class="text-center text-lg font-semibold text-blue-600 mb-6">
@@ -201,7 +201,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import CreditConfigGenerator from './CreditConfigGenerator.vue';
 import MedianetConfig from './MedianetConfig.vue';
@@ -210,6 +210,30 @@ import AustroConfig from './AustroConfig.vue';
 import BinesConfig from './bines/BinesConfig.vue';
 
 const router = useRouter();
+
+// Configuración de países
+const countryConfig = {
+  excluded: ['honduras', 'costa-rica'], // Países que NO deben ver el contenido
+  descriptions: {
+    ecuador: 'Debes seleccionar la red procesadora correspondiente',
+    default: 'Selecciona la red procesadora correspondiente'
+  }
+};
+
+// Computed properties
+const showContent = computed(() => {
+  return !countryConfig.excluded.some(country => 
+    router.currentRoute.value.path.includes(country)
+  );
+});
+
+const currentCountryName = computed(() => {
+  const path = router.currentRoute.value.path;
+  if (path.includes('ecuador')) return 'Ecuador';
+  if (path.includes('costa-rica')) return 'Costa Rica';
+  if (path.includes('honduras')) return 'Honduras';
+  return 'Ecuador'; // default
+});
 
 // Funcionalidad de selección de país
 const paisSeleccionado = ref('Ecuador');
@@ -221,15 +245,20 @@ const togglePaisList = () => {
 
 const redirigirAPais = (pais) => {
   mostrarListaPais.value = false;
-  paisSeleccionado.value = pais === 'ecuador' ? 'Ecuador' : 'Costa Rica';
 
   if (pais === 'ecuador') {
+    paisSeleccionado.value = 'Ecuador';
     router.push('/ecuador');
-  } else {
+  } else if (pais === 'costa-rica') {
+    paisSeleccionado.value = 'Costa Rica';
     router.push('/costa-rica');
+  } else if (pais === 'honduras') {
+    paisSeleccionado.value = 'Honduras';
+    router.push('/honduras');
   }
 };
 
+// Resto del código se mantiene igual...
 // Tipos de Créditos
 
 const planToLetterMap = {
