@@ -79,22 +79,20 @@ const jsonStructure = computed(() => {
     props.excelData.forEach(row => {
         if (!row.typesCredit) return;
 
-        // Separar los valores por coma y limpiar espacios
-        const creditTypes = row.typesCredit.split(",").map(ct => ct.trim());
+        const creditType = row.typesCredit;
+        if (!creditsMap.has(creditType)) {
+            // Parsear el installment desde typesCredit (ej: "03BCR" -> 3)
+            const installment = parseInt(creditType.replace(/\D/g, '')) || 0;
+            const formattedInstallment = installment.toString().padStart(2, '0');
 
-        creditTypes.forEach(creditType => {
-            if (!creditsMap.has(creditType)) {
-                const installment = parseInt(creditType.replace(/\D/g, '')) || 0;
-
-                creditsMap.set(creditType, {
-                    code: `${creditType}`,
-                    description: `A paguitos`,
-                    installment: installment,
-                    merchantCode: row.merchantCode?.toString() || '',
-                    terminalNumber: row.terminalNumber?.toString() || ''
-                });
-            }
-        });
+            creditsMap.set(creditType, {
+                code: `${formattedInstallment}CDU`,
+                description: `A paguitos`,// A paguitos
+                installment: installment,
+                merchantCode: row.merchantCode?.toString() || '',
+                terminalNumber: row.terminalNumber?.toString() || ''
+            });
+        }
     });
 
     const uniqueCredits = Array.from(creditsMap.values());
