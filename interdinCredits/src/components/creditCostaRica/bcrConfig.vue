@@ -9,7 +9,6 @@
             </p>
         </div>
 
-        <!-- Visualización en formato JSON -->
         <div class="bg-gray-50 p-6 rounded-lg shadow-md max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-4">
@@ -53,10 +52,26 @@ const props = defineProps({
 const emits = defineEmits(['back']);
 const showCompressed = ref(false);
 
-// Formatea los datos del Excel a la estructura JSON deseada
+// 🧹 Limpia claves y valores del Excel
+const cleanedData = computed(() => {
+    return props.excelData.map(row => {
+        const clean = {};
+        Object.keys(row).forEach(key => {
+            const cleanKey = key.replace(/\s+/g, '').trim();
+            const value = row[key];
+            if (typeof value === 'string') {
+                clean[cleanKey] = value.trim();
+            } else {
+                clean[cleanKey] = value;
+            }
+        });
+        return clean;
+    });
+});
+
+// 🧠 Genera el JSON
 const jsonStructure = computed(() => {
-    // Obtener todos los ranges únicos
-    const allRanges = props.excelData
+    const allRanges = cleanedData.value
         .filter(row => row.bin && row.start && row.end)
         .map(row => ({
             bin: row.bin.toString(),
@@ -64,7 +79,6 @@ const jsonStructure = computed(() => {
             end: row.end.toString()
         }));
 
-    // Eliminar ranges duplicados
     const uniqueRanges = allRanges.filter((range, index, self) =>
         index === self.findIndex(r =>
             r.bin === range.bin &&
@@ -73,28 +87,26 @@ const jsonStructure = computed(() => {
         )
     );
 
-    // Obtener todos los credits únicos por typesCredit
     const creditsMap = new Map();
 
-    props.excelData.forEach(row => {
-        if (!row.typesCredit) return;
+    cleanedData.value.forEach(row => {
+        const typesValue = row.typesCredit?.trim();
+        if (!typesValue) return;
 
-        // Separar los valores por coma y limpiar espacios
-        const creditTypes = row.typesCredit.split(",").map(ct => ct.trim());
+        // ✅ Detecta el número de cuotas en cualquier parte del texto
+        const match = typesValue.match(/(\d+)\s*[cC]uotas?/);
+        const installment = match ? parseInt(match[1]) : 0;
 
-        creditTypes.forEach(creditType => {
-            if (!creditsMap.has(creditType)) {
-                const installment = parseInt(creditType.replace(/\D/g, '')) || 0;
-                const formattedInstallment = installment.toString().padStart(2, '0');
+        // ✅ Genera el código con base en el número de cuotas detectado
+        const formattedInstallment = installment.toString().padStart(2, '0');
+        const code = `${formattedInstallment}BCR`;
 
-                creditsMap.set(creditType, {
-                    code: `${formattedInstallment}BCR`,
-                    description: `PLAN 0% ${installment} CUOTAS`,
-                    installment: installment,
-                    merchantCode: row.merchantCode?.toString() || '',
-                    terminalNumber: row.terminalNumber?.toString() || ''
-                });
-            }
+        creditsMap.set(typesValue, {
+            code,
+            description: typesValue,
+            installment,
+            merchantCode: row.merchantCode?.toString() || '',
+            terminalNumber: row.terminalNumber?.toString() || ''
         });
     });
 
@@ -108,24 +120,12 @@ const jsonStructure = computed(() => {
     };
 });
 
-// JSON formateado con indentación
-const formattedJson = computed(() => {
-    return JSON.stringify(jsonStructure.value, null, 2);
-});
+// JSON formateado o comprimido
+const formattedJson = computed(() => JSON.stringify(jsonStructure.value, null, 2));
+const compressedJson = computed(() => JSON.stringify(jsonStructure.value));
+const displayedJson = computed(() => showCompressed.value ? compressedJson.value : formattedJson.value);
 
-// JSON comprimido (una sola línea)
-const compressedJson = computed(() => {
-    return JSON.stringify(jsonStructure.value);
-});
-
-// JSON que se muestra actualmente
-const displayedJson = computed(() => {
-    return showCompressed.value ? compressedJson.value : formattedJson.value;
-});
-
-const toggleJsonFormat = () => {
-    showCompressed.value = !showCompressed.value;
-};
+const toggleJsonFormat = () => showCompressed.value = !showCompressed.value;
 
 const copyToClipboard = () => {
     navigator.clipboard.writeText(displayedJson.value);

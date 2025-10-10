@@ -2,14 +2,13 @@
     <div>
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">
-                Configuración BCR - Datos Cargados
+                Configuración BCT - Datos Cargados
             </h1>
             <p class="text-gray-600 mb-4">
                 Los datos del Excel se han procesado correctamente
             </p>
         </div>
 
-        <!-- Visualización en formato JSON -->
         <div class="bg-gray-50 p-6 rounded-lg shadow-md max-w-6xl mx-auto">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-4">
@@ -53,18 +52,14 @@ const props = defineProps({
 const emits = defineEmits(['back']);
 const showCompressed = ref(false);
 
-// 🧹 Limpieza profunda de claves y valores
+// 🧹 Limpieza de claves y valores del Excel
 const cleanedData = computed(() => {
     return props.excelData.map(row => {
         const clean = {};
         Object.keys(row).forEach(key => {
-            const cleanKey = key.replace(/\s+/g, '').trim(); // elimina espacios y tabulaciones
+            const cleanKey = key.replace(/\s+/g, '').trim();
             const value = row[key];
-            if (typeof value === 'string') {
-                clean[cleanKey] = value.trim();
-            } else {
-                clean[cleanKey] = value;
-            }
+            clean[cleanKey] = typeof value === 'string' ? value.trim() : value;
         });
         return clean;
     });
@@ -72,6 +67,10 @@ const cleanedData = computed(() => {
 
 // 🧠 Genera la estructura JSON
 const jsonStructure = computed(() => {
+    let pibot = 1; // 🔹 Comienza en 1
+    const creditsMap = new Map();
+
+    // --- Rangos únicos ---
     const allRanges = cleanedData.value
         .filter(row => row.bin && row.start && row.end)
         .map(row => ({
@@ -88,47 +87,62 @@ const jsonStructure = computed(() => {
         )
     );
 
-    const creditsMap = new Map();
+    // --- Créditos únicos ---
+    const seenDescriptions = new Set();
 
     cleanedData.value.forEach(row => {
         const typesValue = row.typesCredit?.trim();
         if (!typesValue) return;
 
-        const creditTypes = typesValue.split(",").map(ct => ct.trim());
+        const creditTypes = typesValue.split(",").map(ct => ct.trim()).filter(Boolean);
 
-        creditTypes.forEach(creditType => {
-            if (!creditsMap.has(creditType)) {
-                const numbers = creditType.match(/\d+/g);
-                const installment = numbers ? parseInt(numbers[0]) : 0;
-                //const formattedInstallment = installment.toString().padStart(2, '0');
+        creditTypes.forEach(typeText => {
+            // Evita duplicados
+            if (seenDescriptions.has(typeText)) return;
+            seenDescriptions.add(typeText);
 
-                creditsMap.set(creditType, {
-                    code: creditType,
-                    description: "A paguitos",
-                    installment: installment,
-                    merchantCode: row.merchantCode?.toString() || '',
-                    terminalNumber: row.terminalNumber?.toString() || ''
-                });
-            }
+            // Detecta número de cuotas
+            const match = typeText.match(/(\d+)\s*[mM]/) || typeText.match(/(\d+)\s*[cC]uotas?/);
+            const installment = match ? parseInt(match[1]) : 0;
+
+            // Genera código
+            const formattedInstallment = installment.toString().padStart(2, '0');
+            const code = `${formattedInstallment}AD${pibot}`;
+
+            // Guarda el crédito
+            creditsMap.set(typeText, {
+                code,
+                description: typeText,
+                installment,
+                merchantCode: row.merchantCode?.toString() || '',
+                terminalNumber: row.terminalNumber?.toString() || ''
+            });
+
+            // Incrementa el pivote
+            pibot += 2;
         });
     });
 
     const uniqueCredits = Array.from(creditsMap.values());
 
     return {
-        include: [{
-            ranges: uniqueRanges,
-            credits: uniqueCredits
-        }]
+        include: [
+            {
+                ranges: uniqueRanges,
+                credits: uniqueCredits
+            }
+        ]
     };
 });
 
-// JSON formateado y comprimido
+
+// 🧾 JSON formateado o comprimido
 const formattedJson = computed(() => JSON.stringify(jsonStructure.value, null, 2));
 const compressedJson = computed(() => JSON.stringify(jsonStructure.value));
-const displayedJson = computed(() => showCompressed.value ? compressedJson.value : formattedJson.value);
+const displayedJson = computed(() => (showCompressed.value ? compressedJson.value : formattedJson.value));
 
-const toggleJsonFormat = () => showCompressed.value = !showCompressed.value;
+// 🧩 Funciones de control
+const toggleJsonFormat = () => (showCompressed.value = !showCompressed.value);
 
 const copyToClipboard = () => {
     navigator.clipboard.writeText(displayedJson.value);

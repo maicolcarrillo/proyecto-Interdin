@@ -28,6 +28,13 @@
                             Adquirente Davivienda Costa Rica
                         </p>
                     </div>
+                    <div @click="selectAcquirer('BCT')"
+                        class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
+                        <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">Banco BCT CR</h2>
+                        <p class="text-gray-700 group-hover:text-white">
+                            Adquirente BCT Costa Rica
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -39,6 +46,11 @@
             <!-- Vista de configuración para Davivienda -->
             <div v-else-if="selectedAcquirer === 'Davivienda CR' && excelData">
                 <DaviviendaConfig :excelData="excelData" @back="resetSelection" />
+            </div>
+
+             <!-- Vista de configuración para BCT -->
+            <div v-else-if="selectedAcquirer === 'BCT' && excelData">
+                <BCTConfig :excelData="excelData" @back="resetSelection" />
             </div>
 
             <!-- Vista de carga de archivos -->
@@ -132,6 +144,7 @@ import { ref } from 'vue';
 import * as XLSX from 'xlsx';
 import DaviviendaConfig from './daviviendaConfig.vue';
 import BCRConfig from './bcrConfig.vue';
+import BCTConfig from './bctConfig.vue'
 
 const selectedMessage = ref("");
 const selectedAcquirer = ref("");
