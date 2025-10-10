@@ -93,13 +93,17 @@ const jsonStructure = computed(() => {
         // Divide por comas y limpia espacios
         const creditTypes = typesValue.split(",").map(t => t.trim()).filter(Boolean);
 
-        creditTypes.forEach(codeValue => {
-            // Detecta cuotas (por ejemplo: 03CDU → 03)
-            const match = codeValue.match(/(\d+)/);
+        creditTypes.forEach(typeText => {
+            // 🔍 Detecta cuotas (3M, 12M, 18 CUOTAS, etc.)
+            const match = typeText.match(/(\d+)\s*(?:[mM]|cuotas?)/);
             const installment = match ? parseInt(match[1]) : 0;
 
-            creditsMap.set(codeValue, {
-                code: codeValue,
+            // 🏷️ Genera el código y descripción
+            const formattedInstallment = installment.toString().padStart(2, '0');
+            const code = `${formattedInstallment}BCR`;
+
+            creditsMap.set(typeText, {
+                code,
                 description: `PLAN 0% ${installment} CUOTAS`,
                 installment,
                 merchantCode: row.merchantCode?.toString() || '',
