@@ -52,25 +52,22 @@ const props = defineProps({
 const emits = defineEmits(['back']);
 const showCompressed = ref(false);
 
-// 🧹 Limpia claves y valores del Excel
+// 🧹 Limpieza de datos del Excel
 const cleanedData = computed(() => {
     return props.excelData.map(row => {
         const clean = {};
         Object.keys(row).forEach(key => {
             const cleanKey = key.replace(/\s+/g, '').trim();
             const value = row[key];
-            if (typeof value === 'string') {
-                clean[cleanKey] = value.trim();
-            } else {
-                clean[cleanKey] = value;
-            }
+            clean[cleanKey] = typeof value === 'string' ? value.trim() : value;
         });
         return clean;
     });
 });
 
-// 🧠 Genera el JSON
+// 🧠 Generación del JSON BCR
 const jsonStructure = computed(() => {
+    // ✅ RANGOS
     const allRanges = cleanedData.value
         .filter(row => row.bin && row.start && row.end)
         .map(row => ({
@@ -79,48 +76,52 @@ const jsonStructure = computed(() => {
             end: row.end.toString()
         }));
 
+    // Elimina duplicados
     const uniqueRanges = allRanges.filter((range, index, self) =>
         index === self.findIndex(r =>
-            r.bin === range.bin &&
-            r.start === range.start &&
-            r.end === range.end
+            r.bin === range.bin && r.start === range.start && r.end === range.end
         )
     );
 
+    // ✅ CRÉDITOS
     const creditsMap = new Map();
 
     cleanedData.value.forEach(row => {
         const typesValue = row.typesCredit?.trim();
         if (!typesValue) return;
 
-        // ✅ Detecta el número de cuotas en cualquier parte del texto
-        const match = typesValue.match(/(\d+)\s*[cC]uotas?/);
-        const installment = match ? parseInt(match[1]) : 0;
+        // Divide por comas y limpia espacios
+        const creditTypes = typesValue.split(",").map(t => t.trim()).filter(Boolean);
 
-        // ✅ Genera el código con base en el número de cuotas detectado
-        const formattedInstallment = installment.toString().padStart(2, '0');
-        const code = `${formattedInstallment}BCR`;
+        creditTypes.forEach(codeValue => {
+            // Detecta cuotas (por ejemplo: 03CDU → 03)
+            const match = codeValue.match(/(\d+)/);
+            const installment = match ? parseInt(match[1]) : 0;
 
-        creditsMap.set(typesValue, {
-            code,
-            description: typesValue,
-            installment,
-            merchantCode: row.merchantCode?.toString() || '',
-            terminalNumber: row.terminalNumber?.toString() || ''
+            creditsMap.set(codeValue, {
+                code: codeValue,
+                description: `PLAN 0% ${installment} CUOTAS`,
+                installment,
+                merchantCode: row.merchantCode?.toString() || '',
+                terminalNumber: row.terminalNumber?.toString() || ''
+            });
         });
     });
 
     const uniqueCredits = Array.from(creditsMap.values());
 
+    // ✅ ESTRUCTURA FINAL
     return {
-        include: [{
-            ranges: uniqueRanges,
-            credits: uniqueCredits
-        }]
+        include: [
+            {
+                ranges: uniqueRanges,
+                credits: uniqueCredits
+            }
+        ]
     };
 });
 
-// JSON formateado o comprimido
+// JSON formateado / comprimido
 const formattedJson = computed(() => JSON.stringify(jsonStructure.value, null, 2));
 const compressedJson = computed(() => JSON.stringify(jsonStructure.value));
 const displayedJson = computed(() => showCompressed.value ? compressedJson.value : formattedJson.value);
