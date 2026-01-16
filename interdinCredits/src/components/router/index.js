@@ -4,7 +4,7 @@ import {
 } from "vue-router";
 import ParametrizacionCreditos from "@/components/ParametrizacionCreditos.vue";
 import ParametrizacionCreditosCr from "@/components/creditCostaRica/parametrizacionCreditosCr.vue";
-import ParametrizacionCreditosHn from "@/components/creditHonduras/parametrizacionCreditosHn.vue";
+import ParametrizacionCreditosPa from "@/components/creditPanama/parametrizacionCreditosPa.vue";
 
 const routes = [{
     path: "/",
@@ -17,9 +17,9 @@ const routes = [{
     name: "costa-rica",
   },
   {
-    path: "/honduras",
-    component: ParametrizacionCreditosHn,
-    name: "honduras",
+    path: "/panama",
+    component: ParametrizacionCreditosPa,
+    name: "panama",
   }
 ];
 

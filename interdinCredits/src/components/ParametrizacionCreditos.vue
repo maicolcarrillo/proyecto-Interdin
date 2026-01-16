@@ -70,10 +70,10 @@
               </button>
             </li>
             <li>
-              <button @click="redirigirAPais('honduras')"
+              <button @click="redirigirAPais('panama')"
                 class="w-full text-left px-6 py-3 hover:bg-gray-100 flex items-center gap-3">
-                <img src="https://flagcdn.com/w20/hn.png" alt="Costa Rica" class="w-5 h-auto rounded-sm">
-                <span>Honduras</span>
+                <img src="https://flagcdn.com/w20/pa.png" alt="Costa Rica" class="w-5 h-auto rounded-sm">
+                <span>Panama</span>
               </button>
             </li>
           </ul>
@@ -213,7 +213,7 @@ const router = useRouter();
 
 // Configuración de países
 const countryConfig = {
-  excluded: ['honduras', 'costa-rica'], // Países que NO deben ver el contenido
+  excluded: ['panama', 'costa-rica'], // Países que NO deben ver el contenido
   descriptions: {
     ecuador: 'Debes seleccionar la red procesadora correspondiente',
     default: 'Selecciona la red procesadora correspondiente'
@@ -222,7 +222,7 @@ const countryConfig = {
 
 // Computed properties
 const showContent = computed(() => {
-  return !countryConfig.excluded.some(country => 
+  return !countryConfig.excluded.some(country =>
     router.currentRoute.value.path.includes(country)
   );
 });
@@ -231,7 +231,7 @@ const currentCountryName = computed(() => {
   const path = router.currentRoute.value.path;
   if (path.includes('ecuador')) return 'Ecuador';
   if (path.includes('costa-rica')) return 'Costa Rica';
-  if (path.includes('honduras')) return 'Honduras';
+  if (path.includes('pamana')) return 'Panama';
   return 'Ecuador'; // default
 });
 
@@ -252,9 +252,9 @@ const redirigirAPais = (pais) => {
   } else if (pais === 'costa-rica') {
     paisSeleccionado.value = 'Costa Rica';
     router.push('/costa-rica');
-  } else if (pais === 'honduras') {
-    paisSeleccionado.value = 'Honduras';
-    router.push('/honduras');
+  } else if (pais === 'panama') {
+    paisSeleccionado.value = 'Panama';
+    router.push('/panama');
   }
 };
 

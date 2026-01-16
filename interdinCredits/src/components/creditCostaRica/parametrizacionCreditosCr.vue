@@ -48,7 +48,7 @@
                 <DaviviendaConfig :excelData="excelData" @back="resetSelection" />
             </div>
 
-             <!-- Vista de configuración para BCT -->
+            <!-- Vista de configuración para Banco BCT CR -->
             <div v-else-if="selectedAcquirer === 'BCT' && excelData">
                 <BCTConfig :excelData="excelData" @back="resetSelection" />
             </div>

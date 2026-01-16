@@ -4,7 +4,7 @@
             <!-- Vista de selección de adquirente Cards-->
             <div v-if="!selectedAcquirer">
                 <h1 class="text-4xl font-bold text-gray-800 text-center mb-8">
-                    Bienvenido a parametrización de tipo de créditos Honduras
+                    Bienvenido a parametrización de tipo de créditos Panamá
                 </h1>
                 <p class="text-gray-700 text-lg text-center mb-12">
                     Debes seleccionar el adquirente correspondiente
@@ -12,27 +12,24 @@
                 <p v-if="selectedMessage" class="text-center text-lg font-semibold text-blue-600 mb-6 mt-8">
                     {{ selectedMessage }}
                 </p>
-
+                <!--Card home-->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div @click="selectAcquirer('BCR')"
+                    <div @click="selectAcquirer('BCT Bank')"
                         class="group transform bg-white rounded-lg shadow-lg p-8 cursor-pointer transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black">
-                        <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">Honduras</h2>
+                        <h2 class="text-xl font-bold text-gray-800 group-hover:text-white mb-4">BCT Bank</h2>
                         <p class="text-gray-700 group-hover:text-white">
-                            Parametrización de créditos en Honduras
+                            Parametrización de créditos en Panamá
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Vista de configuración para BCR -->
-            <div v-else-if="selectedAcquirer === 'BCR' && excelData">
-                <BCRConfig :excelData="excelData" @back="resetSelection" />
+
+            <!-- Vista de configuración para BCT BANK -->
+            <div v-else-if="selectedAcquirer === 'BCT Bank' && excelData">
+                <bctBankConfig :excelData="excelData" @back="resetSelection" />
             </div>
 
-            <!-- Vista de configuración para Davivienda -->
-            <div v-else-if="selectedAcquirer === 'Davivienda CR' && excelData">
-                <DaviviendaConfig :excelData="excelData" @back="resetSelection" />
-            </div>
 
             <!-- Vista de carga de archivos -->
             <div v-else>
@@ -65,7 +62,7 @@
                                     <tr class="text-center">
                                         <td class="px-3 py-2 border">10107385</td>
                                         <td class="px-3 py-2 border">011142500120000</td>
-                                        <td class="px-3 py-2 border">03CDU / 03BCR</td>
+                                        <td class="px-3 py-2 border">CA1 / CAD</td>
                                         <td class="px-3 py-2 border">411757</td>
                                         <td class="px-3 py-2 border">41175734</td>
                                         <td class="px-3 py-2 border">41175760</td>
@@ -123,6 +120,7 @@
 
 import { ref } from 'vue';
 import * as XLSX from 'xlsx';
+import bctBankConfig from './bctBankConfig.vue';
 
 
 const selectedMessage = ref("");
